@@ -246,29 +246,41 @@ async function init(){
     return;
   }
   document.getElementById('appBody').classList.remove('hidden');
-  await refreshKelasList();
+  try{
+    await refreshKelasList();
+  }catch(err){
+    showStatus('Gagal memuat aplikasi: '+err.message, 'err');
+  }
 }
+window.addEventListener('error', function(ev){
+  showStatus('Terjadi error: '+ev.message, 'err');
+});
 
 async function refreshKelasList(){
   try{
     kelasList = await api('listKelas', {});
+    if(!Array.isArray(kelasList)) kelasList = [];
   }catch(err){
     showStatus('Gagal memuat daftar kelas: '+err.message, 'err');
     kelasList = [];
   }
-  const sel = document.getElementById('kelasSelect');
-  sel.innerHTML = kelasList.map(k=>`<option value="${k.kelasKey}">${k.kelas} - ${k.semester} (${k.mapel})</option>`).join('');
-  if(kelasList.length === 0){
-    document.getElementById('kelasContent').classList.add('hidden');
-    document.getElementById('noKelas').classList.remove('hidden');
-    return;
+  try{
+    const sel = document.getElementById('kelasSelect');
+    sel.innerHTML = kelasList.map(k=>`<option value="${k.kelasKey}">${k.kelas} - ${k.semester} (${k.mapel})</option>`).join('');
+    if(kelasList.length === 0){
+      document.getElementById('kelasContent').classList.add('hidden');
+      document.getElementById('noKelas').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('noKelas').classList.add('hidden');
+    if(!currentKelasKey || !kelasList.find(k=>k.kelasKey===currentKelasKey)){
+      currentKelasKey = kelasList[0].kelasKey;
+    }
+    sel.value = currentKelasKey;
+    await selectKelas(currentKelasKey);
+  }catch(err){
+    showStatus('Terjadi kesalahan menampilkan daftar kelas: '+err.message, 'err');
   }
-  document.getElementById('noKelas').classList.add('hidden');
-  if(!currentKelasKey || !kelasList.find(k=>k.kelasKey===currentKelasKey)){
-    currentKelasKey = kelasList[0].kelasKey;
-  }
-  sel.value = currentKelasKey;
-  await selectKelas(currentKelasKey);
 }
 
 async function selectKelas(kelasKey){
@@ -320,7 +332,7 @@ function openSettings(){
   document.getElementById('modalBackdrop').classList.remove('hidden');
   document.getElementById('modalBox').innerHTML = `
     <h3 class="font-bold text-lg mb-3">⚙️ Pengaturan Server</h3>
-    <p class="text-sm text-slate-500 mb-3">https://script.google.com/macros/s/AKfycbzJJWc5pqMSAu4nMfm43x5I6pMJc-LpPGItiZzOaUE73chUVCKkkFeDk3_2a0r3ylWPrg/exec</code>).</p>
+    <p class="text-sm text-slate-500 mb-3">Tempelkan URL Web App Google Apps Script (diakhiri <code>/exec</code>).</p>
     <input id="inputScriptUrl" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mb-3" placeholder="https://script.google.com/macros/s/xxxx/exec" value="${SCRIPT_URL}">
     <div class="flex justify-end gap-2">
       <button onclick="closeModal()" class="px-3 py-1.5 text-sm rounded-md border border-slate-300">Batal</button>
