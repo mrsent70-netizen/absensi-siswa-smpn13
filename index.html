@@ -40,11 +40,18 @@
     .print-page:last-child{ page-break-after:auto; }
   }
   #printArea{ display:none; }
-  .doc-title{ text-align:center; font-weight:700; font-size:14px; line-height:1.35; }
-  .print-table{ width:100%; border-collapse:collapse; font-size:8px; table-layout:fixed; }
-  .print-table th, .print-table td{ border:1px solid #000; padding:1.5px 2px; text-align:center; word-break:break-word; }
+  .doc-title{ text-align:center; font-weight:700; font-size:16px; line-height:1.5; }
+  .print-table{ width:auto; max-width:100%; margin:0 auto; border-collapse:collapse; font-size:11px; table-layout:auto; }
+  .print-table th, .print-table td{ border:1px solid #000; padding:4px 6px; text-align:center; word-break:break-word; line-height:1.4; }
   .print-table th{ background:#eef1f5; font-weight:700; }
-  .print-table td.nama{ text-align:left; white-space:normal; font-size:7.5px; }
+  .print-table td.nama{ text-align:left; white-space:nowrap; font-size:10.5px; }
+  .print-table col.col-no{ width:24px; }
+  .print-table col.col-nis{ width:70px; }
+  .print-table col.col-nama{ width:150px; }
+  .print-table col.col-lp{ width:26px; }
+  .print-table col.col-meet{ width:30px; }
+  .print-table col.col-tot{ width:26px; }
+  .print-footnote{ font-size:10px; color:#333; margin-top:6px; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -618,11 +625,16 @@ function generatePrint(){
         SMPN 13 BANDAR LAMPUNG<br>
         T.P. ${cfg.tp}
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;margin:6px 0 4px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin:10px 0 8px;">
         <div>Mata pelajaran : ${cfg.mapel}</div>
         <div>Semester : ${cfg.semester}</div>
       </div>
       <table class="print-table">
+        <colgroup>
+          <col class="col-no"><col class="col-nis"><col class="col-nama"><col class="col-lp">
+          ${block.map(()=>`<col class="col-meet">`).join('') || '<col class="col-meet">'}
+          <col class="col-tot"><col class="col-tot"><col class="col-tot"><col class="col-tot">
+        </colgroup>
         <thead>
           <tr>
             <th rowspan="2">No</th><th rowspan="2">NIS</th><th rowspan="2">NAMA</th><th rowspan="2">L/P</th>
@@ -641,16 +653,17 @@ function generatePrint(){
           </tr>
         </tfoot>
       </table>
-      <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:11px;">
+      <div class="print-footnote">Keterangan: S = Sakit &nbsp;•&nbsp; I = Izin &nbsp;•&nbsp; A = Alpa (Tanpa Keterangan) &nbsp;•&nbsp; Kolom kosong = Hadir</div>
+      <div style="display:flex;justify-content:space-between;margin-top:26px;font-size:13px;">
         <div>
           <div>Laki-laki&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${lk} Siswa</div>
           <div>Perempuan&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${pr} Siswa</div>
           <div>Jumlah&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${siswa.length} Siswa</div>
         </div>
-        <div style="text-align:center;min-width:220px;">
+        <div style="text-align:center;min-width:240px;">
           <div>${tglCetak}</div>
           <div>Guru Mata Pelajaran</div>
-          <div style="height:40px;"></div>
+          <div style="height:60px;"></div>
           <div style="font-weight:700;text-decoration:underline;">${guru}</div>
           <div>NIP. ${nip}</div>
         </div>
