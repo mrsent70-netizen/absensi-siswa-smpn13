@@ -380,12 +380,11 @@ async function saveKelasModal(existingKey){
   const guru = document.getElementById('fGuru').value.trim();
   const nip = document.getElementById('fNip').value.trim();
   if(!kelas || !mapel){ alert('Kelas dan Mata Pelajaran wajib diisi'); return; }
-  const kelasKey = existingKey || (kelas+'-'+semester+'-'+tp).replace(/\s+/g,'').toLowerCase()+'-'+uid();
   try{
-    await api('saveKelas', { kelasKey, kelas, mapel, semester, tp, guru, nip });
+    const r = await api('saveKelas', { kelasKey: existingKey || '', kelas, mapel, semester, tp, guru, nip });
     closeModal();
-    currentKelasKey = kelasKey;
-    localStorage.setItem('absensi_current_kelas', kelasKey);
+    currentKelasKey = r.kelasKey;
+    localStorage.setItem('absensi_current_kelas', r.kelasKey);
     await refreshKelasList();
     showStatus('Kelas disimpan', 'ok');
   }catch(err){ showStatus('Gagal menyimpan kelas: '+err.message, 'err'); }
