@@ -35,7 +35,7 @@
     body *{ visibility:hidden; }
     #printArea, #printArea *{ visibility:visible; }
     #printArea{ display:block !important; position:absolute; top:0; left:0; width:100%; }
-    @page{ size:215mm 330mm; margin:6mm; }
+    @page{ size:215mm 330mm; margin:15mm; }
     .print-page{ page-break-after:always; }
     .print-page:last-child{ page-break-after:auto; }
   }
@@ -619,7 +619,7 @@ function generatePrint(){
     const emptyCols = block.length===0 ? '<th>-</th>' : '';
 
     pagesHtml += `
-    <div class="print-page" style="padding:4px 8px;">
+    <div class="print-page" style="padding:0;">
       <div class="doc-title">
         DAFTAR HADIR SISWA KELAS ${cfg.kelas.toUpperCase()}<br>
         SMPN 13 BANDAR LAMPUNG<br>
