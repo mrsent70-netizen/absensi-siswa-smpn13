@@ -272,6 +272,7 @@ async function refreshKelasList(){
 }
 
 async function selectKelas(kelasKey){
+  await flushAbsensi();
   currentKelasKey = kelasKey;
   localStorage.setItem('absensi_current_kelas', kelasKey);
   document.getElementById('kelasSelect').value = kelasKey;
@@ -434,8 +435,11 @@ async function saveSiswaList(){
   const list = siswaEdit.map((s,i)=>({ no:i+1, nis:s.nis, nama:s.nama, lp:s.lp })).filter(s=>s.nama);
   try{
     await api('saveSiswa', { kelasKey: currentKelasKey, siswa: list });
+    currentData.siswa = list;
+    renderSiswaTable();
+    renderAbsensiTable();
+    renderRekap();
     showStatus('Daftar siswa tersimpan', 'ok');
-    await loadKelasData();
   }catch(err){ showStatus('Gagal menyimpan siswa: '+err.message, 'err'); }
 }
 
@@ -545,7 +549,8 @@ async function addMeeting(){
   try{
     const r = await api('addPertemuan', { kelasKey: currentKelasKey, tanggal: label, tanggalIso: val });
     if(r.added === false){ showStatus('Pertemuan tanggal itu sudah ada', 'err'); return; }
-    await loadKelasData();
+    currentData.pertemuan.push({ kelasKey: currentKelasKey, urutan: r.urutan, tanggal: label, tanggalIso: val });
+    renderAbsensiTable();
     showStatus('Pertemuan ditambahkan', 'ok');
   }catch(err){ showStatus('Gagal menambah pertemuan: '+err.message, 'err'); }
 }
@@ -553,22 +558,62 @@ async function removeMeeting(tanggal){
   if(!confirm('Hapus kolom pertemuan tanggal '+tanggal+'? Data kehadiran pada tanggal ini akan hilang.')) return;
   try{
     await api('deletePertemuan', { kelasKey: currentKelasKey, tanggal });
-    await loadKelasData();
+    currentData.pertemuan = currentData.pertemuan.filter(m=>m.tanggal !== tanggal);
+    Object.keys(absensiMap).forEach(k=>{ if(k.startsWith(tanggal+'|')) delete absensiMap[k]; });
+    renderAbsensiTable();
+    renderRekap();
+    showStatus('Pertemuan dihapus', 'ok');
   }catch(err){ showStatus('Gagal menghapus pertemuan: '+err.message, 'err'); }
 }
 
 const CYCLE = ['', 'S', 'I', 'A'];
-async function cycleCell(tanggal, nis){
+let pendingAbsensi = {}; // "tanggal|nis" -> status (antrean perubahan yang belum dikirim ke server)
+let flushTimer = null;
+
+function cycleCell(tanggal, nis){
   const key = tanggal+'|'+nis;
   const cur = absensiMap[key] || '';
   const next = CYCLE[(CYCLE.indexOf(cur)+1) % CYCLE.length];
   absensiMap[key] = next;
+  pendingAbsensi[key] = { tanggal, nis, status: next };
   renderAbsensiTable();
   renderRekap();
-  try{
-    await api('setAbsensi', { kelasKey: currentKelasKey, tanggal, nis, status: next });
-  }catch(err){ showStatus('Gagal menyimpan absensi: '+err.message, 'err'); }
+  scheduleFlush();
 }
+
+function scheduleFlush(){
+  showSavingIndicator(true);
+  if(flushTimer) clearTimeout(flushTimer);
+  flushTimer = setTimeout(flushAbsensi, 900);
+}
+
+async function flushAbsensi(){
+  const records = Object.values(pendingAbsensi);
+  if(records.length === 0){ showSavingIndicator(false); return; }
+  pendingAbsensi = {};
+  try{
+    await api('setAbsensiBatch', { kelasKey: currentKelasKey, records });
+    showSavingIndicator(false);
+  }catch(err){
+    showStatus('Gagal menyimpan sebagian absensi: '+err.message, 'err');
+    showSavingIndicator(false);
+  }
+}
+
+function showSavingIndicator(saving){
+  const bar = document.getElementById('statusBar');
+  if(saving){
+    bar.classList.remove('hidden');
+    bar.innerHTML = `<div class="border bg-slate-50 text-slate-500 border-slate-200 text-sm px-3 py-2 rounded-lg">Menyimpan...</div>`;
+  } else if(bar.innerHTML.includes('Menyimpan')){
+    bar.innerHTML = `<div class="border bg-emerald-50 text-emerald-700 border-emerald-200 text-sm px-3 py-2 rounded-lg">Tersimpan</div>`;
+    setTimeout(()=>bar.classList.add('hidden'), 1200);
+  }
+}
+
+// Kirim sisa perubahan yang belum tersimpan saat pengguna pindah tab atau menutup halaman
+window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushAbsensi(); });
+window.addEventListener('beforeunload', ()=>{ if(Object.keys(pendingAbsensi).length){ flushAbsensi(); } });
 
 function renderRekap(){
   const siswa = currentData.siswa || [];
@@ -585,6 +630,7 @@ function renderRekap(){
    TAB CETAK / PDF
 ============================================================ */
 function generatePrint(){
+  if(Object.keys(pendingAbsensi).length){ flushAbsensi(); }
   const cfg = currentData.config;
   const siswa = currentData.siswa || [];
   const meetings = currentData.pertemuan || [];
