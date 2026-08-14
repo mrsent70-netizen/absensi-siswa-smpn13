@@ -30,149 +30,170 @@
   ::-webkit-scrollbar{ height:10px; width:10px; }
   ::-webkit-scrollbar-thumb{ background:#c3cad4; border-radius:8px; }
 
-  /* ===== PRINT / PDF — LEGAL PORTRAIT + JILID 1.5 CM ===== */
+  /* ===== PRINT / PDF — LEGAL PORTRAIT, JILID KIRI 1,5 CM ===== */
   @media print{
-    /* Legal Portrait: 216 x 356 mm.
-       Margin kiri sengaja dibuat 15 mm untuk ruang jilid. */
     @page{
       size: 216mm 356mm;
-      margin: 0;
+      /* KIRI 1,5 CM untuk jilid */
+      margin: 8mm 5mm 8mm 15mm;
     }
 
     html, body{
-      width: 216mm !important;
-      min-height: 356mm !important;
+      width: auto !important;
+      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
       background: #fff !important;
       overflow: visible !important;
     }
 
-    body *{ visibility: hidden !important; }
-    #printArea, #printArea *{ visibility: visible !important; }
+    body *{ visibility:hidden !important; }
+    #printArea, #printArea *{ visibility:visible !important; }
 
+    /*
+      Jangan memakai left:15mm lagi.
+      Ruang jilid diatur langsung melalui @page margin-left:15mm,
+      sehingga 1,5 cm benar-benar berada di sisi KIRI kertas.
+    */
     #printArea{
-      display: block !important;
-      position: absolute !important;
-      top: 8mm !important;
-      left: 15mm !important;
-      width: 195mm !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      display:block !important;
+      position:static !important;
+      width:auto !important;
+      margin:0 !important;
+      padding:0 !important;
     }
 
     .print-page{
-      display: block !important;
-      width: 195mm !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      page-break-after: always !important;
-      break-after: page !important;
-      overflow: visible !important;
+      display:block !important;
+      width:100% !important;
+      margin:0 !important;
+      padding:0 !important;
+      page-break-after:always !important;
+      break-after:page !important;
+      overflow:visible !important;
     }
 
     .print-page:last-child{
-      page-break-after: auto !important;
-      break-after: auto !important;
+      page-break-after:auto !important;
+      break-after:auto !important;
     }
 
     .print-page-inner{
-      display: block !important;
-      width: 195mm !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      min-height: 0 !important;
-      height: auto !important;
+      display:block !important;
+      width:100% !important;
+      min-height:0 !important;
+      height:auto !important;
+      margin:0 !important;
+      padding:0 !important;
     }
 
     .print-spacer{ display:none !important; }
 
     .doc-title{
-      text-align: center !important;
-      font-weight: 700 !important;
-      font-size: 11px !important;
-      line-height: 1.15 !important;
-      margin: 0 0 2mm 0 !important;
+      text-align:center !important;
+      font-weight:700 !important;
+      font-size:11px !important;
+      line-height:1.1 !important;
+      margin:0 0 2mm 0 !important;
+      padding:0 !important;
     }
 
     .print-meta{
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      width: 195mm !important;
-      font-size: 8px !important;
-      line-height: 1.1 !important;
-      margin: 0 0 2mm 0 !important;
+      display:flex !important;
+      justify-content:space-between !important;
+      align-items:center !important;
+      width:100% !important;
+      font-size:8px !important;
+      line-height:1.1 !important;
+      margin:0 0 2mm 0 !important;
+      padding:0 !important;
     }
 
-    /* Tabel memenuhi area setelah ruang jilid 1,5 cm */
+    /*
+      Lebar tabel mengikuti area kertas setelah margin kiri 15 mm.
+      Legal 216 - kiri 15 - kanan 5 = 196 mm.
+    */
     .print-table{
-      width: 195mm !important;
-      max-width: 195mm !important;
-      margin: 0 !important;
-      border-collapse: collapse !important;
-      table-layout: fixed !important;
-      font-size: 7.5px !important;
+      width:100% !important;
+      max-width:none !important;
+      margin:0 !important;
+      padding:0 !important;
+      border-collapse:collapse !important;
+      table-layout:fixed !important;
+      font-size:8px !important;
     }
 
-    /* Garis tetap jelas + tinggi baris diperlebar */
+    /* BARIS DIPERLEBAR: garis tetap jelas */
     .print-table th,
     .print-table td{
-      box-sizing: border-box !important;
-      border: 0.3mm solid #000 !important;
-      padding: 1.25mm 0.35mm !important;
-      height: 7mm !important;
-      min-height: 7mm !important;
-      text-align: center !important;
-      vertical-align: middle !important;
-      line-height: 1.1 !important;
-      white-space: nowrap !important;
-      word-break: normal !important;
-      width: auto !important;
-      margin: 0 !important;
+      box-sizing:border-box !important;
+      border:0.35mm solid #000 !important;
+      padding:1.4mm 0.4mm !important;
+      height:9mm !important;
+      min-height:9mm !important;
+      text-align:center !important;
+      vertical-align:middle !important;
+      line-height:1.05 !important;
+      white-space:nowrap !important;
+      word-break:normal !important;
+      margin:0 !important;
     }
 
-    /* Header sedikit lebih tinggi agar tulisan jelas */
     .print-table thead th{
-      height: 7.5mm !important;
-      min-height: 7.5mm !important;
-      padding: 1mm 0.35mm !important;
+      height:7mm !important;
+      min-height:7mm !important;
+      padding:0.8mm 0.3mm !important;
+      font-size:7.5px !important;
+    }
+
+    .print-table tbody td{
+      height:9mm !important;
+      min-height:9mm !important;
+    }
+
+    .print-table tfoot td{
+      height:7mm !important;
+      min-height:7mm !important;
+      font-weight:700 !important;
     }
 
     .print-table th{
-      font-weight: 700 !important;
-      background: #eef1f5 !important;
+      background:#eef1f5 !important;
+      font-weight:700 !important;
     }
 
     .print-table td.nama{
-      text-align: left !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      white-space: nowrap !important;
+      text-align:left !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      white-space:nowrap !important;
+      padding-left:1mm !important;
     }
 
-    /* Lebar kolom tetap, kolom pertemuan membagi sisa ruang */
-    .print-table col.col-no{ width: 6mm !important; }
-    .print-table col.col-nis{ width: 23mm !important; }
-    .print-table col.col-nama{ width: 42mm !important; }
-    .print-table col.col-lp{ width: 6mm !important; }
-    .print-table col.col-meet{ width: auto !important; }
-    .print-table col.col-tot{ width: 6mm !important; }
+    /* Lebar kolom identitas. Kolom pertemuan membagi sisa lebar. */
+    .print-table col.col-no{ width:6mm !important; }
+    .print-table col.col-nis{ width:23mm !important; }
+    .print-table col.col-nama{ width:43mm !important; }
+    .print-table col.col-lp{ width:6mm !important; }
+    .print-table col.col-meet{ width:auto !important; }
+    .print-table col.col-tot{ width:6mm !important; }
 
     .print-footnote{
-      font-size: 7.5px !important;
-      line-height: 1.1 !important;
-      margin-top: 1.5mm !important;
+      font-size:7.5px !important;
+      line-height:1.1 !important;
+      margin:1.5mm 0 0 0 !important;
+      padding:0 !important;
     }
 
     .print-signature{
       display:flex !important;
       justify-content:space-between !important;
       align-items:flex-start !important;
-      width: 195mm !important;
+      width:100% !important;
       font-size:8px !important;
       line-height:1.15 !important;
-      margin-top:4mm !important;
+      margin:4mm 0 0 0 !important;
+      padding:0 !important;
     }
 
     .print-signature .teacher{
@@ -181,7 +202,7 @@
     }
   }
 
-  #printArea{ display:none; }
+  #printArea{display:none;}
 
   .doc-title{
     text-align:center;
@@ -210,17 +231,17 @@
     vertical-align:middle;
   }
 
-  .print-table th{ background:#eef1f5; font-weight:700; }
-  .print-table td.nama{ text-align:left; white-space:nowrap; }
-  .print-table col.col-no{ width:6mm; }
-  .print-table col.col-nis{ width:21mm; }
-  .print-table col.col-nama{ width:38mm; }
-  .print-table col.col-lp{ width:6mm; }
-  .print-table col.col-meet{ width:auto; }
-  .print-table col.col-tot{ width:6mm; }
-  .print-footnote{ font-size:10px; color:#333; margin-top:6px; }
-  .print-page-inner{ display:block; width:100%; }
-  .print-spacer{ display:none; }
+  .print-table th{background:#eef1f5;font-weight:700;}
+  .print-table td.nama{text-align:left;white-space:nowrap;}
+  .print-table col.col-no{width:6mm;}
+  .print-table col.col-nis{width:21mm;}
+  .print-table col.col-nama{width:38mm;}
+  .print-table col.col-lp{width:6mm;}
+  .print-table col.col-meet{width:auto;}
+  .print-table col.col-tot{width:6mm;}
+  .print-footnote{font-size:10px;color:#333;margin-top:6px;}
+  .print-page-inner{display:block;width:100%;}
+  .print-spacer{display:none;}
 </style>
 </head>
 <body class="min-h-screen">
