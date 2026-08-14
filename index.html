@@ -2,178 +2,762 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Absensi Legal Portrait - 1 Lembar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi Siswa Online - SMPN 13 Bandar Lampung</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body{ font-family:'Segoe UI',system-ui,sans-serif; background:#f6f5f1; }
-  #printArea{ display:none; }
-  .doc-title{ text-align:center; font-weight:800; font-size:11px; line-height:1.25; text-transform:uppercase; }
-  .print-table{ width:100%; border-collapse:collapse; table-layout:fixed; }
-  .print-table th, .print-table td{ border:1px solid #000; padding:1.8px 2px; text-align:center; font-size:7.5px; line-height:1.2; white-space:nowrap; overflow:hidden; }
-  .print-table th{ background:#eef1f5; font-weight:700; font-size:7.5px; }
-  .print-table td.nama{ text-align:left; font-size:8px; padding-left:3px; white-space:nowrap; }
-  .print-table td.nis{ font-size:6.8px; }
-  
-  /* ===== LEGAL PORTRAIT 1 LEMBAR - FIX ===== */
-  @media print{
-    @page{
-      size: 215mm 330mm; /* F4 / Legal Portrait */
-      size: legal portrait; /* fallback untuk EPSON L1210 */
-      margin: 10mm 10mm 10mm 10mm;
-    }
-    html, body{
-      background:#fff !important;
-      margin:0 !important;
-      padding:0 !important;
-      height:auto !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    .brand-gradient, main, #statusBar, #noServer, .no-print{
-      display:none !important;
-    }
-    #printArea{
-      display:block !important;
-      position:static !important;
-      width:100% !important;
-      margin:0 !important;
-      padding:0 !important;
-    }
-    .print-page{
-      page-break-after: avoid;
-      page-break-inside: avoid;
-      width:100%;
-    }
+  :root{
+    --navy:#0f2a4a;
+    --navy-2:#173a63;
+    --teal:#0d7377;
+    --teal-2:#14a3a8;
+    --paper:#f6f5f1;
+    --line:#d8dce3;
+    --ink:#1c2733;
   }
+  body{ font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--paper); color:var(--ink); }
+  .brand-gradient{ background:linear-gradient(120deg,var(--navy) 0%,var(--navy-2) 55%,var(--teal) 130%); }
+  .tab-btn.active{ background:var(--navy); color:#fff; }
+  .tab-btn{ transition:all .15s ease; }
+  table.grid td, table.grid th{ border:1px solid var(--line); }
+  .cell-btn{ width:100%; height:100%; min-height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; font-size:12px; user-select:none; }
+  .cell-S{ background:#fff4cc; color:#8a6d00; }
+  .cell-I{ background:#dbeafe; color:#1e40af; }
+  .cell-A{ background:#fecdd3; color:#9f1239; }
+  .cell-H{ background:#fff; color:#94a3b8; }
+  .sticky-col{ position:sticky; background:#fff; z-index:2; }
+  .scroll-shadow{ box-shadow: inset 8px 0 8px -8px rgba(0,0,0,.15); }
+  ::-webkit-scrollbar{ height:10px; width:10px; }
+  ::-webkit-scrollbar-thumb{ background:#c3cad4; border-radius:8px; }
+
+  /* ===== PRINT / PDF (F4 / Legal landscape) ===== */
+  @media print{
+    body *{ visibility:hidden; }
+    #printArea, #printArea *{ visibility:visible; }
+    #printArea{ display:block !important; position:absolute; top:0; left:0; width:100%; }
+    @page{ size:215mm 330mm; margin:15mm; }
+    .print-page{ page-break-after:always; }
+    .print-page:last-child{ page-break-after:auto; }
+  }
+  #printArea{ display:none; }
+  .doc-title{ text-align:center; font-weight:700; font-size:14px; line-height:1.35; }
+  .print-table{ width:auto; max-width:100%; margin:0 auto; border-collapse:collapse; font-size:10.5px; table-layout:auto; }
+  .print-table th, .print-table td{ border:1px solid #000; padding:3px 5px; text-align:center; word-break:break-word; line-height:1.25; white-space:nowrap; }
+  .print-table th{ background:#eef1f5; font-weight:700; }
+  .print-table td.nama{ text-align:left; white-space:nowrap; font-size:10px; }
+  .print-table col.col-no{ width:22px; }
+  .print-table col.col-nis{ width:78px; }
+  .print-table col.col-nama{ width:150px; }
+  .print-table col.col-lp{ width:24px; }
+  .print-table col.col-meet{ width:28px; }
+  .print-table col.col-tot{ width:24px; }
+  .print-footnote{ font-size:9.5px; color:#333; margin-top:5px; }
 </style>
 </head>
 <body class="min-h-screen">
-<div class="brand-gradient bg-slate-800 text-white p-4 no-print">
-  <div class="max-w-7xl mx-auto flex justify-between items-center">
-    <div class="font-bold">Absensi Siswa Online - SMPN 13 (Legal Portrait Fix)</div>
-    <div class="text-xs">Mode: Legal Portrait 1 Lembar</div>
+
+<!-- ============ TOP BAR ============ -->
+<div class="brand-gradient text-white sticky top-0 z-30 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center font-black text-lg">13</div>
+      <div>
+        <div class="font-bold leading-tight">Absensi Siswa Online</div>
+        <div class="text-xs text-white/70 leading-tight">SMP Negeri 13 Bandar Lampung</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <select id="kelasSelect" class="text-sm rounded-md px-2 py-1.5 text-slate-800 min-w-[220px]"></select>
+      <button id="btnKelasBaru" class="bg-white/15 hover:bg-white/25 text-sm px-3 py-1.5 rounded-md">+ Kelas Baru</button>
+      <button id="btnPengaturan" class="bg-white/15 hover:bg-white/25 text-sm px-3 py-1.5 rounded-md" title="Pengaturan Server">⚙</button>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 flex gap-1 pb-0">
+    <button data-tab="siswa" class="tab-btn active px-4 py-2 rounded-t-lg text-sm font-semibold bg-white/10">1. Data Siswa</button>
+    <button data-tab="absensi" class="tab-btn px-4 py-2 rounded-t-lg text-sm font-semibold bg-white/10">2. Absensi</button>
+    <button data-tab="cetak" class="tab-btn px-4 py-2 rounded-t-lg text-sm font-semibold bg-white/10">3. Cetak PDF</button>
   </div>
 </div>
 
-<main class="max-w-7xl mx-auto p-4 no-print">
-  <div class="bg-white rounded-xl border p-5">
-    <h2 class="font-bold text-lg mb-2">Setting Cetak Legal Portrait</h2>
-    <p class="text-sm text-slate-600 mb-4">Ini sudah di-set portrait F4/Legal biar muat 28 siswa dalam 1 lembar memanjang ke bawah (bukan landscape).</p>
-    <div class="grid md:grid-cols-2 gap-3 mb-5">
-      <div><label class="text-xs text-slate-500">Guru</label><input id="cetakGuru" class="w-full border rounded px-3 py-2 text-sm mt-1" value="Sentot Hardiono, S.Pd."></div>
-      <div><label class="text-xs text-slate-500">NIP</label><input id="cetakNip" class="w-full border rounded px-3 py-2 text-sm mt-1" value="19701215 200012 1 001"></div>
-      <div><label class="text-xs text-slate-500">Kota, Tanggal</label><input id="cetakTanggal" class="w-full border rounded px-3 py-2 text-sm mt-1" value="Bandar Lampung, 13 Agustus 2026"></div>
-      <div><label class="text-xs text-slate-500">Mata Pelajaran</label><input id="cetakMapel" class="w-full border rounded px-3 py-2 text-sm mt-1" value="IPA"></div>
+<div id="statusBar" class="hidden max-w-7xl mx-auto mt-2 px-4"></div>
+
+<!-- ============ MAIN ============ -->
+<main class="max-w-7xl mx-auto p-4">
+
+  <!-- Empty state: no server configured -->
+  <div id="noServer" class="hidden bg-white border border-amber-300 rounded-xl p-6 text-center">
+    <div class="text-3xl mb-2">⚙️</div>
+    <div class="font-bold text-lg mb-1">Server belum diatur</div>
+    <p class="text-slate-600 text-sm mb-4">Tempelkan URL Web App Google Apps Script di menu Pengaturan agar data absensi bisa tersimpan online dan dibuka dari HP maupun laptop.</p>
+    <button onclick="openSettings()" class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-sm font-semibold">Buka Pengaturan</button>
+  </div>
+
+  <div id="appBody" class="hidden">
+
+    <!-- Empty state: no class selected -->
+    <div id="noKelas" class="hidden bg-white border border-slate-200 rounded-xl p-8 text-center">
+      <div class="text-3xl mb-2">📋</div>
+      <div class="font-bold text-lg mb-1">Belum ada kelas</div>
+      <p class="text-slate-600 text-sm mb-4">Buat kelas terlebih dahulu (contoh: Kelas IX.1, Semester Ganjil) untuk mulai mencatat absensi.</p>
+      <button onclick="openKelasModal()" class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Buat Kelas</button>
     </div>
-    <button onclick="generatePrint()" class="bg-slate-800 text-white px-6 py-3 rounded-lg font-bold">🖨️ Cetak Legal Portrait (1 Lembar)</button>
-    <div class="mt-3 text-xs bg-amber-50 border border-amber-200 p-3 rounded">
-      <b>Setting di dialog Print Chrome:</b><br>
-      Destination: EPSON L1210 Series<br>
-      Pages: All • Copies: 1<br>
-      Layout: <b>Portrait</b><br>
-      Paper size: <b>Legal (8.5 x 14) atau F4</b><br>
-      Margins: <b>None / Minimum</b><br>
-      Scale: <b>100</b><br>
-      Harus tertulis: <b>1 sheets of paper</b>
+
+    <div id="kelasContent" class="hidden">
+      <!-- Class info strip -->
+      <div class="bg-white rounded-xl border border-slate-200 p-4 mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div class="font-bold text-lg" id="infoKelasNama">-</div>
+          <div class="text-sm text-slate-500" id="infoKelasSub">-</div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="openKelasModal(true)" class="text-sm px-3 py-1.5 rounded-md border border-slate-300 hover:bg-slate-50">Edit Info Kelas</button>
+          <button onclick="confirmDeleteKelas()" class="text-sm px-3 py-1.5 rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus Kelas</button>
+        </div>
+      </div>
+
+      <!-- TAB: SISWA -->
+      <section id="tab-siswa" class="tab-panel">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+            <h2 class="font-bold text-slate-800">Daftar Siswa</h2>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="addSiswaRow()" class="text-sm px-3 py-1.5 rounded-md border border-slate-300 hover:bg-slate-50">+ Tambah Baris</button>
+              <button onclick="openImportModal()" class="text-sm px-3 py-1.5 rounded-md border border-slate-300 hover:bg-slate-50">Impor dari Excel</button>
+              <button onclick="saveSiswaList()" class="text-sm px-3 py-1.5 rounded-md bg-[var(--teal)] text-white font-semibold hover:opacity-90">💾 Simpan</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-slate-500 border-b border-slate-200">
+                  <th class="py-2 px-2 w-12">No</th>
+                  <th class="py-2 px-2 w-32">NIS</th>
+                  <th class="py-2 px-2">Nama Siswa</th>
+                  <th class="py-2 px-2 w-24">L/P</th>
+                  <th class="py-2 px-2 w-10"></th>
+                </tr>
+              </thead>
+              <tbody id="siswaTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: ABSENSI -->
+      <section id="tab-absensi" class="tab-panel hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 mb-4">
+          <div class="flex items-center gap-2 flex-wrap">
+            <label class="text-sm font-semibold text-slate-600">Tambah Pertemuan:</label>
+            <input type="date" id="newMeetingDate" class="border border-slate-300 rounded-md px-2 py-1.5 text-sm">
+            <button onclick="addMeeting()" class="text-sm px-3 py-1.5 rounded-md bg-[var(--navy)] text-white font-semibold">+ Tambah</button>
+            <span class="text-xs text-slate-400">Klik sel pada tabel untuk mengubah status: kosong (Hadir) → S → I → A</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-2 overflow-x-auto">
+          <table class="grid text-xs min-w-max" id="absensiTable"></table>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm" id="rekapBox"></div>
+      </section>
+
+      <!-- TAB: CETAK -->
+      <section id="tab-cetak" class="tab-panel hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-4">
+          <h2 class="font-bold text-slate-800">Cetak / Unduh PDF (Ukuran F4 / Legal, Potrait)</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-semibold text-slate-500">Guru Mata Pelajaran</label>
+              <input id="cetakGuru" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-500">NIP</label>
+              <input id="cetakNip" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-500">Kota, Tanggal Cetak</label>
+              <input id="cetakTanggal" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1" placeholder="Bandar Lampung,       2026">
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-slate-500">Jumlah kolom pertemuan per halaman</label>
+              <input id="cetakBlok" type="number" value="10" min="5" max="20" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
+              <p class="text-[11px] text-slate-400 mt-1">Kertas F4 Potrait lebih sempit, disarankan 8–10 kolom pertemuan per halaman agar tidak terlalu kecil.</p>
+            </div>
+          </div>
+          <button onclick="generatePrint()" class="bg-[var(--teal)] text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90">🖨️ Buat & Cetak PDF</button>
+          <p class="text-xs text-slate-400">Setelah halaman cetak terbuka, pada kotak dialog print pilih "Save as PDF" / "Simpan sebagai PDF" dan pastikan ukuran kertas F4 / Legal, orientasi Potrait (tegak).</p>
+        </div>
+      </section>
+
     </div>
   </div>
 </main>
 
 <div id="printArea"></div>
 
-<script>
-let currentData = {
-  config: { kelas: "9.1", tp: "2026-2027", mapel: "IPA", semester: "Ganjil" },
-  siswa: [
-    {nis:"3114657062", nama:"AHMAD FAUZI", lp:"L"},{nis:"0122002753", nama:"AHMAD MUBAROK", lp:"L"},{nis:"0119909671", nama:"ALDRIEN SUGIARTO", lp:"L"},
-    {nis:"0112591022", nama:"ALEESYA AZIZAH AQILAH", lp:"P"},{nis:"0122812080", nama:"ANDHIKA CAHYA JUNAIDI PUTRA", lp:"L"},
-    {nis:"0125781837", nama:"ANDRE DWI PUTRA", lp:"L"},{nis:"0121861151", nama:"ATAYA DAFI ALFARIZQI", lp:"L"},{nis:"3124505959", nama:"AYU LAILA", lp:"P"},
-    {nis:"0127885629", nama:"AYU RAMADHANI", lp:"P"},{nis:"3117452319", nama:"CHERLY DESWITA", lp:"P"},{nis:"0128630846", nama:"DANID NURHADI", lp:"L"},
-    {nis:"0126071631", nama:"DANIEL ARYA SYAH PUTRA", lp:"L"},{nis:"0127793747", nama:"DEDIE PERLIANSYAH", lp:"L"},
-    {nis:"0127378783", nama:"HANIFAH QAISYA SYAKIRA AK", lp:"P"},{nis:"0112657975", nama:"KADEK AKTHA A'ZAHRA", lp:"P"},
-    {nis:"0118620914", nama:"KAISAR ZHAVIER PRADESTA", lp:"L"},{nis:"0118649621", nama:"KANZA AQILA ZANETA", lp:"P"},
-    {nis:"0114949867", nama:"KARTIKA PUTRI RAHAYU", lp:"P"},{nis:"0124631787", nama:"M RIZAL ABIDIN", lp:"L"},
-    {nis:"0111166316", nama:"M. HELFI HELMANDIYA", lp:"L"},{nis:"0112951383", nama:"M.BINTANG LUTHFI PERDANA", lp:"L"},
-    {nis:"0124650774", nama:"MAHESYA RADITHYO PRABOWO", lp:"L"},{nis:"0127998824", nama:"MUHAMAD MAHDI BINTARA", lp:"L"},
-    {nis:"0113346236", nama:"RAFA ANANDA", lp:"L"},{nis:"0113531703", nama:"RAFFI PRATAMA", lp:"L"},
-    {nis:"0117229750", nama:"REVAN EGA ALFATHIR", lp:"L"},{nis:"0118642697", nama:"ZAHARA KHAIRUNISA", lp:"P"},
-    {nis:"0104126446", nama:"YUDI SANJAYA", lp:"L"}
-  ],
-  pertemuan: [
-    {urutan:1, tanggal:"20/7"},{urutan:2, tanggal:"22/7"},{urutan:3, tanggal:"27/7"},{urutan:4, tanggal:"29/7"},{urutan:5, tanggal:"3/8"},{urutan:6, tanggal:"5/8"},{urutan:7, tanggal:"10/8"},{urutan:8, tanggal:"12/8"},{urutan:9, tanggal:""}
-  ]
-};
-let absensiMap = {};
+<!-- ============ MODALS ============ -->
+<div id="modalBackdrop" class="hidden fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4">
+  <div id="modalBox" class="bg-white rounded-xl max-w-lg w-full p-5 max-h-[90vh] overflow-y-auto"></div>
+</div>
 
+<script>
+/* ============================================================
+   STATE
+============================================================ */
+let SCRIPT_URL = localStorage.getItem('absensi_script_url') || 'https://script.google.com/macros/s/AKfycbzJJWc5pqMSAu4nMfm43x5I6pMJc-LpPGItiZzOaUE73chUVCKkkFeDk3_2a0r3ylWPrg/exec';
+let kelasList = [];
+let currentKelasKey = localStorage.getItem('absensi_current_kelas') || '';
+let currentData = { config: null, siswa: [], pertemuan: [], absensi: [] };
+let absensiMap = {}; // "tanggal|nis" -> status
+
+function uid(){ return 'k' + Date.now() + Math.floor(Math.random()*1000); }
+function resetNoKelasDefault(){
+  document.getElementById('noKelas').innerHTML = `
+      <div class="text-3xl mb-2">📋</div>
+      <div class="font-bold text-lg mb-1">Belum ada kelas</div>
+      <p class="text-slate-600 text-sm mb-4">Buat kelas terlebih dahulu (contoh: Kelas IX.1, Semester Ganjil) untuk mulai mencatat absensi.</p>
+      <button onclick="openKelasModal()" class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Buat Kelas</button>`;
+}
+
+/* ============================================================
+   API
+============================================================ */
+async function api(action, data){
+  if(!SCRIPT_URL){ throw new Error('URL server belum diatur'); }
+  const res = await fetch(SCRIPT_URL, {
+    method:'POST',
+    body: JSON.stringify({action, data})
+  });
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || 'Terjadi kesalahan server');
+  return json.result;
+}
+
+let statusHideTimer = null;
+function showStatus(msg, kind){
+  const bar = document.getElementById('statusBar');
+  bar.classList.remove('hidden');
+  if(statusHideTimer){ clearTimeout(statusHideTimer); statusHideTimer = null; }
+  const colors = { ok:'bg-emerald-50 text-emerald-700 border-emerald-200', err:'bg-red-50 text-red-700 border-red-200', info:'bg-slate-50 text-slate-600 border-slate-200' };
+  bar.innerHTML = `<div class="border ${colors[kind||'info']} text-sm px-3 py-2 rounded-lg">${msg}</div>`;
+  if(kind !== 'err') statusHideTimer = setTimeout(()=>bar.classList.add('hidden'), 2500);
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+async function init(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
+  document.getElementById('kelasSelect').addEventListener('change', e=>selectKelas(e.target.value));
+  document.getElementById('btnKelasBaru').addEventListener('click', ()=>openKelasModal());
+  document.getElementById('btnPengaturan').addEventListener('click', openSettings);
+
+  if(!SCRIPT_URL){
+    document.getElementById('noServer').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('appBody').classList.remove('hidden');
+  try{
+    await refreshKelasList();
+  }catch(err){
+    showStatus('Gagal memuat aplikasi: '+err.message, 'err');
+  }
+}
+window.addEventListener('error', function(ev){
+  showStatus('Terjadi error: '+ev.message, 'err');
+});
+window.addEventListener('unhandledrejection', function(ev){
+  showStatus('Terjadi error: '+(ev.reason && ev.reason.message ? ev.reason.message : ev.reason), 'err');
+});
+
+async function refreshKelasList(){
+  try{
+    kelasList = await api('listKelas', {});
+    if(!Array.isArray(kelasList)) kelasList = [];
+  }catch(err){
+    showStatus('Gagal memuat daftar kelas: '+err.message, 'err');
+    kelasList = [];
+  }
+  try{
+    const sel = document.getElementById('kelasSelect');
+    sel.innerHTML = kelasList.map(k=>`<option value="${k.kelasKey}">${k.kelas} - ${k.semester} (${k.mapel})</option>`).join('');
+    if(kelasList.length === 0){
+      document.getElementById('kelasContent').classList.add('hidden');
+      resetNoKelasDefault();
+      document.getElementById('noKelas').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('noKelas').classList.add('hidden');
+    if(!currentKelasKey || !kelasList.find(k=>k.kelasKey===currentKelasKey)){
+      currentKelasKey = kelasList[0].kelasKey;
+    }
+    sel.value = currentKelasKey;
+    await selectKelas(currentKelasKey);
+  }catch(err){
+    showStatus('Terjadi kesalahan menampilkan daftar kelas: '+err.message, 'err');
+  }
+}
+
+async function selectKelas(kelasKey){
+  await flushAbsensi();
+  currentKelasKey = kelasKey;
+  localStorage.setItem('absensi_current_kelas', kelasKey);
+  document.getElementById('kelasSelect').value = kelasKey;
+  await loadKelasData();
+}
+
+async function loadKelasData(){
+  if(!currentKelasKey) return;
+  showStatus('Memuat data...', 'info');
+  try{
+    currentData = await api('getData', { kelasKey: currentKelasKey });
+  }catch(err){
+    showStatus('Gagal memuat data: '+err.message, 'err');
+    return;
+  }
+  if(!currentData.config){
+    document.getElementById('kelasContent').classList.add('hidden');
+    document.getElementById('noKelas').classList.remove('hidden');
+    document.getElementById('noKelas').innerHTML = `
+      <div class="text-3xl mb-2">⚠️</div>
+      <div class="font-bold text-lg mb-1">Kelas ini tidak ditemukan / data lama tidak kompatibel</div>
+      <p class="text-slate-600 text-sm mb-4">Kelas ini kemungkinan dibuat di versi aplikasi sebelumnya dan strukturnya sudah berubah. Hapus kelas ini lalu buat ulang.</p>
+      <button onclick="confirmDeleteKelas()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold mr-2">Hapus Kelas Ini</button>
+      <button onclick="openKelasModal()" class="bg-[var(--navy)] text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Buat Kelas Baru</button>`;
+    showStatus('Kelas tidak ditemukan', 'err');
+    return;
+  }
+  document.getElementById('kelasContent').classList.remove('hidden');
+  const cfg = currentData.config;
+  document.getElementById('infoKelasNama').textContent = `Kelas ${cfg.kelas} — ${cfg.mapel}`;
+  document.getElementById('infoKelasSub').textContent = `Semester ${cfg.semester} • T.P. ${cfg.tp} • Guru: ${cfg.guru}`;
+  document.getElementById('cetakGuru').value = cfg.guru || '';
+  document.getElementById('cetakNip').value = cfg.nip || '';
+
+  absensiMap = {};
+  currentData.absensi.forEach(a=>{ absensiMap[a.tanggal+'|'+a.nis] = a.status; });
+
+  renderSiswaTable();
+  renderAbsensiTable();
+  renderRekap();
+  showStatus('Data dimuat', 'ok');
+}
+
+/* ============================================================
+   TABS
+============================================================ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('tab-'+tab).classList.remove('hidden');
+}
+
+/* ============================================================
+   SETTINGS MODAL
+============================================================ */
+function openSettings(){
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+  document.getElementById('modalBox').innerHTML = `
+    <h3 class="font-bold text-lg mb-3">⚙️ Pengaturan Server</h3>
+    <p class="text-sm text-slate-500 mb-3">Tempelkan URL Web App Google Apps Script (diakhiri <code>/exec</code>).</p>
+    <input id="inputScriptUrl" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mb-3" placeholder="https://script.google.com/macros/s/xxxx/exec" value="${SCRIPT_URL}">
+    <div class="flex justify-end gap-2">
+      <button onclick="closeModal()" class="px-3 py-1.5 text-sm rounded-md border border-slate-300">Batal</button>
+      <button onclick="saveSettings()" class="px-3 py-1.5 text-sm rounded-md bg-[var(--navy)] text-white font-semibold">Simpan</button>
+    </div>`;
+}
+async function saveSettings(){
+  const val = document.getElementById('inputScriptUrl').value.trim();
+  if(!val){ return; }
+  SCRIPT_URL = val;
+  localStorage.setItem('absensi_script_url', val);
+  closeModal();
+  document.getElementById('noServer').classList.add('hidden');
+  document.getElementById('appBody').classList.remove('hidden');
+  await refreshKelasList();
+}
+function closeModal(){ document.getElementById('modalBackdrop').classList.add('hidden'); }
+
+/* ============================================================
+   KELAS MODAL
+============================================================ */
+function openKelasModal(isEdit){
+  const cfg = isEdit && currentData.config ? currentData.config : { kelas:'', mapel:'', semester:'Ganjil', tp:'2026-2027', guru:'', nip:'' };
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+  document.getElementById('modalBox').innerHTML = `
+    <h3 class="font-bold text-lg mb-3">${isEdit? 'Edit Info Kelas' : '+ Buat Kelas Baru'}</h3>
+    <div class="space-y-3">
+      <div><label class="text-xs font-semibold text-slate-500">Kelas (contoh: IX.1)</label>
+        <input id="fKelas" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1" value="${cfg.kelas}"></div>
+      <div><label class="text-xs font-semibold text-slate-500">Mata Pelajaran</label>
+        <input id="fMapel" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1" value="${cfg.mapel}"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs font-semibold text-slate-500">Semester</label>
+          <select id="fSemester" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1">
+            <option ${cfg.semester==='Ganjil'?'selected':''}>Ganjil</option>
+            <option ${cfg.semester==='Genap'?'selected':''}>Genap</option>
+          </select></div>
+        <div><label class="text-xs font-semibold text-slate-500">Tahun Pelajaran</label>
+          <input id="fTp" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1" value="${cfg.tp}"></div>
+      </div>
+      <div><label class="text-xs font-semibold text-slate-500">Nama Guru Mata Pelajaran</label>
+        <input id="fGuru" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1" value="${cfg.guru}"></div>
+      <div><label class="text-xs font-semibold text-slate-500">NIP</label>
+        <input id="fNip" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm mt-1" value="${cfg.nip}"></div>
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closeModal()" class="px-3 py-1.5 text-sm rounded-md border border-slate-300">Batal</button>
+      <button onclick="saveKelasModal(${isEdit?`'${cfg.kelasKey}'`:'null'})" class="px-3 py-1.5 text-sm rounded-md bg-[var(--navy)] text-white font-semibold">Simpan</button>
+    </div>`;
+}
+
+async function saveKelasModal(existingKey){
+  const kelas = document.getElementById('fKelas').value.trim();
+  const mapel = document.getElementById('fMapel').value.trim();
+  const semester = document.getElementById('fSemester').value;
+  const tp = document.getElementById('fTp').value.trim();
+  const guru = document.getElementById('fGuru').value.trim();
+  const nip = document.getElementById('fNip').value.trim();
+  if(!kelas || !mapel){ alert('Kelas dan Mata Pelajaran wajib diisi'); return; }
+  try{
+    const r = await api('saveKelas', { kelasKey: existingKey || '', kelas, mapel, semester, tp, guru, nip });
+    closeModal();
+    currentKelasKey = r.kelasKey;
+    localStorage.setItem('absensi_current_kelas', r.kelasKey);
+    await refreshKelasList();
+    showStatus('Kelas disimpan', 'ok');
+  }catch(err){ showStatus('Gagal menyimpan kelas: '+err.message, 'err'); }
+}
+
+async function confirmDeleteKelas(){
+  if(!confirm('Yakin hapus kelas ini beserta seluruh data siswa dan absensinya? Tindakan ini tidak bisa dibatalkan.')) return;
+  try{
+    await api('deleteKelas', { kelasKey: currentKelasKey });
+    currentKelasKey = '';
+    await refreshKelasList();
+    showStatus('Kelas dihapus', 'ok');
+  }catch(err){ showStatus('Gagal menghapus: '+err.message, 'err'); }
+}
+
+/* ============================================================
+   TAB SISWA
+============================================================ */
+let siswaEdit = [];
+function renderSiswaTable(){
+  siswaEdit = (currentData.siswa || []).map(s=>({...s}));
+  drawSiswaRows();
+}
+function drawSiswaRows(){
+  const tbody = document.getElementById('siswaTbody');
+  tbody.innerHTML = siswaEdit.map((s,i)=>`
+    <tr class="border-b border-slate-100">
+      <td class="py-1 px-2 text-slate-400">${i+1}</td>
+      <td class="py-1 px-2"><input value="${s.nis||''}" onchange="siswaEdit[${i}].nis=this.value" class="w-full border border-slate-200 rounded px-2 py-1 text-sm"></td>
+      <td class="py-1 px-2"><input value="${s.nama||''}" onchange="siswaEdit[${i}].nama=this.value" class="w-full border border-slate-200 rounded px-2 py-1 text-sm"></td>
+      <td class="py-1 px-2">
+        <select onchange="siswaEdit[${i}].lp=this.value" class="w-full border border-slate-200 rounded px-2 py-1 text-sm">
+          <option value="L" ${s.lp==='L'?'selected':''}>L</option>
+          <option value="P" ${s.lp==='P'?'selected':''}>P</option>
+        </select>
+      </td>
+      <td class="py-1 px-2 text-center"><button onclick="removeSiswaRow(${i})" class="text-red-500 hover:text-red-700">✕</button></td>
+    </tr>`).join('');
+}
+function addSiswaRow(){
+  siswaEdit.push({ no: siswaEdit.length+1, nis:'', nama:'', lp:'L' });
+  drawSiswaRows();
+}
+function removeSiswaRow(i){ siswaEdit.splice(i,1); drawSiswaRows(); }
+
+async function saveSiswaList(){
+  const list = siswaEdit.map((s,i)=>({ no:i+1, nis:s.nis, nama:s.nama, lp:s.lp })).filter(s=>s.nama);
+  try{
+    await api('saveSiswa', { kelasKey: currentKelasKey, siswa: list });
+    currentData.siswa = list;
+    renderSiswaTable();
+    renderAbsensiTable();
+    renderRekap();
+    showStatus('Daftar siswa tersimpan', 'ok');
+  }catch(err){ showStatus('Gagal menyimpan siswa: '+err.message, 'err'); }
+}
+
+function openImportModal(){
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+  document.getElementById('modalBox').innerHTML = `
+    <h3 class="font-bold text-lg mb-2">Impor Daftar Siswa</h3>
+    <p class="text-sm text-slate-500 mb-3">Salin (copy) kolom <b>NIS, Nama, L/P</b> dari Excel lalu tempel di bawah ini (satu siswa per baris, dipisah TAB atau koma).</p>
+    <textarea id="importArea" rows="10" class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm font-mono" placeholder="1234567890	Ahmad Fauzi	L
+1234567891	Siti Aminah	P"></textarea>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closeModal()" class="px-3 py-1.5 text-sm rounded-md border border-slate-300">Batal</button>
+      <button onclick="doImport()" class="px-3 py-1.5 text-sm rounded-md bg-[var(--navy)] text-white font-semibold">Impor</button>
+    </div>`;
+}
+function doImport(){
+  const raw = document.getElementById('importArea').value.trim();
+  if(!raw) { closeModal(); return; }
+  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  lines.forEach(line=>{
+    const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+    const nis = (parts[0]||'').trim();
+    const nama = (parts[1]||'').trim();
+    let lp = (parts[2]||'L').trim().toUpperCase();
+    if(lp !== 'L' && lp !== 'P') lp = 'L';
+    if(nama) siswaEdit.push({ no: siswaEdit.length+1, nis, nama, lp });
+  });
+  drawSiswaRows();
+  closeModal();
+}
+
+/* ============================================================
+   TAB ABSENSI
+============================================================ */
+function renderAbsensiTable(){
+  const table = document.getElementById('absensiTable');
+  const meetings = currentData.pertemuan || [];
+  const siswa = currentData.siswa || [];
+
+  let thead = '<thead><tr>' +
+    `<th class="sticky-col left-0 px-2 py-1 bg-slate-50" style="min-width:32px">No</th>` +
+    `<th class="sticky-col px-2 py-1 bg-slate-50" style="left:32px;min-width:90px">NIS</th>` +
+    `<th class="sticky-col px-2 py-1 bg-slate-50" style="left:122px;min-width:150px">Nama</th>` +
+    `<th class="px-2 py-1 bg-slate-50" style="min-width:36px">L/P</th>` +
+    meetings.map(m=>`<th class="px-1 py-1 bg-slate-50" style="min-width:38px">
+        <div>${m.urutan}</div><div class="text-[10px] text-slate-400">${m.tanggal}</div>
+        <div onclick="removeMeeting('${m.tanggal}')" class="text-red-400 cursor-pointer text-[10px]" title="Hapus pertemuan">✕</div>
+      </th>`).join('') +
+    `<th class="px-2 py-1 bg-yellow-50" style="min-width:30px">S</th>` +
+    `<th class="px-2 py-1 bg-blue-50" style="min-width:30px">I</th>` +
+    `<th class="px-2 py-1 bg-rose-50" style="min-width:30px">A</th>` +
+    `<th class="px-2 py-1 bg-slate-100" style="min-width:30px">∑</th>` +
+    '</tr></thead>';
+
+  let tbody = '<tbody>' + siswa.map((s,i)=>{
+    let cS=0,cI=0,cA=0;
+    const cells = meetings.map(m=>{
+      const key = m.tanggal+'|'+s.nis;
+      const st = absensiMap[key] || '';
+      if(st==='S') cS++; if(st==='I') cI++; if(st==='A') cA++;
+      return `<td class="p-0"><div class="cell-btn cell-${st||'H'}" onclick="cycleCell('${m.tanggal}','${s.nis}')">${st}</div></td>`;
+    }).join('');
+    return `<tr>
+      <td class="sticky-col left-0 bg-white px-2 py-1 text-center">${i+1}</td>
+      <td class="sticky-col bg-white px-2 py-1" style="left:32px">${s.nis}</td>
+      <td class="sticky-col bg-white px-2 py-1 text-left whitespace-nowrap" style="left:122px">${s.nama}</td>
+      <td class="px-2 py-1 text-center">${s.lp}</td>
+      ${cells}
+      <td class="px-2 py-1 text-center bg-yellow-50/50">${cS||''}</td>
+      <td class="px-2 py-1 text-center bg-blue-50/50">${cI||''}</td>
+      <td class="px-2 py-1 text-center bg-rose-50/50">${cA||''}</td>
+      <td class="px-2 py-1 text-center bg-slate-50 font-semibold">${cS+cI+cA||''}</td>
+    </tr>`;
+  }).join('') + '</tbody>';
+
+  // footer: jumlah tidak hadir per meeting
+  let footS=0, footI=0, footA=0;
+  const footCells = meetings.map(m=>{
+    let s=0,i2=0,a=0;
+    siswa.forEach(s2=>{
+      const st = absensiMap[m.tanggal+'|'+s2.nis];
+      if(st==='S') s++; if(st==='I') i2++; if(st==='A') a++;
+    });
+    return `<td class="px-1 py-1 text-center text-[10px] text-slate-500">${(s+i2+a)||''}</td>`;
+  }).join('');
+  siswa.forEach(s2=>{
+    meetings.forEach(m=>{
+      const st = absensiMap[m.tanggal+'|'+s2.nis];
+      if(st==='S') footS++; if(st==='I') footI++; if(st==='A') footA++;
+    });
+  });
+  tbody = tbody.replace('</tbody>', `<tr class="bg-slate-50 font-semibold">
+      <td colspan="4" class="px-2 py-1 text-right sticky-col left-0 bg-slate-50">Jumlah tidak hadir</td>
+      ${footCells}
+      <td class="text-center">${footS||''}</td><td class="text-center">${footI||''}</td><td class="text-center">${footA||''}</td>
+      <td class="text-center">${footS+footI+footA||''}</td>
+    </tr></tbody>`);
+
+  table.innerHTML = thead + tbody;
+}
+
+async function addMeeting(){
+  const val = document.getElementById('newMeetingDate').value;
+  if(!val){ alert('Pilih tanggal terlebih dahulu'); return; }
+  const d = new Date(val+'T00:00:00');
+  const label = d.getDate()+'/'+(d.getMonth()+1);
+  try{
+    const r = await api('addPertemuan', { kelasKey: currentKelasKey, tanggal: label, tanggalIso: val });
+    if(r.added === false){ showStatus('Pertemuan tanggal itu sudah ada', 'err'); return; }
+    currentData.pertemuan.push({ kelasKey: currentKelasKey, urutan: r.urutan, tanggal: label, tanggalIso: val });
+    renderAbsensiTable();
+    showStatus('Pertemuan ditambahkan', 'ok');
+  }catch(err){ showStatus('Gagal menambah pertemuan: '+err.message, 'err'); }
+}
+async function removeMeeting(tanggal){
+  if(!confirm('Hapus kolom pertemuan tanggal '+tanggal+'? Data kehadiran pada tanggal ini akan hilang.')) return;
+  try{
+    await api('deletePertemuan', { kelasKey: currentKelasKey, tanggal });
+    currentData.pertemuan = currentData.pertemuan.filter(m=>m.tanggal !== tanggal);
+    Object.keys(absensiMap).forEach(k=>{ if(k.startsWith(tanggal+'|')) delete absensiMap[k]; });
+    renderAbsensiTable();
+    renderRekap();
+    showStatus('Pertemuan dihapus', 'ok');
+  }catch(err){ showStatus('Gagal menghapus pertemuan: '+err.message, 'err'); }
+}
+
+const CYCLE = ['', 'S', 'I', 'A'];
+let pendingAbsensi = {}; // "tanggal|nis" -> status (antrean perubahan yang belum dikirim ke server)
+let flushTimer = null;
+
+function cycleCell(tanggal, nis){
+  const key = tanggal+'|'+nis;
+  const cur = absensiMap[key] || '';
+  const next = CYCLE[(CYCLE.indexOf(cur)+1) % CYCLE.length];
+  absensiMap[key] = next;
+  pendingAbsensi[key] = { tanggal, nis, status: next };
+  renderAbsensiTable();
+  renderRekap();
+  scheduleFlush();
+}
+
+function scheduleFlush(){
+  showSavingIndicator(true);
+  if(flushTimer) clearTimeout(flushTimer);
+  flushTimer = setTimeout(flushAbsensi, 900);
+}
+
+async function flushAbsensi(){
+  const records = Object.values(pendingAbsensi);
+  if(records.length === 0){ showSavingIndicator(false); return; }
+  pendingAbsensi = {};
+  try{
+    await api('setAbsensiBatch', { kelasKey: currentKelasKey, records });
+    showSavingIndicator(false);
+  }catch(err){
+    showStatus('Gagal menyimpan sebagian absensi: '+err.message, 'err');
+    showSavingIndicator(false);
+  }
+}
+
+function showSavingIndicator(saving){
+  const bar = document.getElementById('statusBar');
+  if(saving){
+    bar.classList.remove('hidden');
+    bar.innerHTML = `<div class="border bg-slate-50 text-slate-500 border-slate-200 text-sm px-3 py-2 rounded-lg">Menyimpan...</div>`;
+  } else if(bar.innerHTML.includes('Menyimpan')){
+    bar.innerHTML = `<div class="border bg-emerald-50 text-emerald-700 border-emerald-200 text-sm px-3 py-2 rounded-lg">Tersimpan</div>`;
+    setTimeout(()=>bar.classList.add('hidden'), 1200);
+  }
+}
+
+// Kirim sisa perubahan yang belum tersimpan saat pengguna pindah tab atau menutup halaman
+window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushAbsensi(); });
+window.addEventListener('beforeunload', ()=>{ if(Object.keys(pendingAbsensi).length){ flushAbsensi(); } });
+
+function renderRekap(){
+  const siswa = currentData.siswa || [];
+  const lk = siswa.filter(s=>s.lp==='L').length;
+  const pr = siswa.filter(s=>s.lp==='P').length;
+  document.getElementById('rekapBox').innerHTML = `
+    <div class="bg-slate-50 rounded-lg p-3"><div class="text-xs text-slate-500">Laki-laki</div><div class="text-xl font-bold">${lk} Siswa</div></div>
+    <div class="bg-slate-50 rounded-lg p-3"><div class="text-xs text-slate-500">Perempuan</div><div class="text-xl font-bold">${pr} Siswa</div></div>
+    <div class="bg-slate-50 rounded-lg p-3"><div class="text-xs text-slate-500">Jumlah</div><div class="text-xl font-bold">${siswa.length} Siswa</div></div>
+  `;
+}
+
+/* ============================================================
+   TAB CETAK / PDF
+============================================================ */
 function generatePrint(){
-  const siswa = currentData.siswa;
-  const meetings = currentData.pertemuan;
-  const guru = document.getElementById('cetakGuru').value;
-  const nip = document.getElementById('cetakNip').value;
-  const tglCetak = document.getElementById('cetakTanggal').value;
-  const mapel = document.getElementById('cetakMapel').value;
+  if(Object.keys(pendingAbsensi).length){ flushAbsensi(); }
+  const cfg = currentData.config;
+  const siswa = currentData.siswa || [];
+  const meetings = currentData.pertemuan || [];
+  const guru = document.getElementById('cetakGuru').value || cfg.guru;
+  const nip = document.getElementById('cetakNip').value || cfg.nip;
+  const tglCetak = document.getElementById('cetakTanggal').value || ('Bandar Lampung,       ' + cfg.tp.split('-')[0]);
+  const blokSize = parseInt(document.getElementById('cetakBlok').value) || 20;
+
+  const blocks = [];
+  for(let i=0;i<meetings.length;i+=blokSize) blocks.push(meetings.slice(i,i+blokSize));
+  if(blocks.length===0) blocks.push([]);
+
   const lk = siswa.filter(s=>s.lp==='L').length;
   const pr = siswa.filter(s=>s.lp==='P').length;
 
-  const rows = siswa.map((s,i)=>{
-    const cells = meetings.map(m=>`<td></td>`).join('');
-    return `<tr><td>${i+1}</td><td class="nis">${s.nis}</td><td class="nama">${s.nama}</td><td>${s.lp}</td>${cells}<td></td><td></td><td></td><td></td></tr>`;
-  }).join('');
+  let pagesHtml = '';
+  blocks.forEach(block=>{
+    let footS=0, footI=0, footA=0;
+    const rows = siswa.map((s,i)=>{
+      let cS=0,cI=0,cA=0;
+      const cells = block.map(m=>{
+        const st = absensiMap[m.tanggal+'|'+s.nis] || '';
+        if(st==='S') cS++; if(st==='I') cI++; if(st==='A') cA++;
+        return `<td>${st}</td>`;
+      }).join('');
+      footS+=cS; footI+=cI; footA+=cA;
+      return `<tr><td>${i+1}</td><td>${s.nis}</td><td class="nama">${s.nama}</td><td>${s.lp}</td>${cells}<td>${cS||''}</td><td>${cI||''}</td><td>${cA||''}</td><td>${(cS+cI+cA)||''}</td></tr>`;
+    }).join('');
 
-  const headUrutan = meetings.map(m=>`<th style="width:18px">${m.urutan}</th>`).join('');
-  const headTanggal = meetings.map(m=>`<th style="font-size:6px">${m.tanggal}</th>`).join('');
+    const headUrutan = block.map(m=>`<th>${m.urutan}</th>`).join('');
+    const headTanggal = block.map(m=>`<th>${m.tanggal}</th>`).join('');
+    const emptyCols = block.length===0 ? '<th>-</th>' : '';
 
-  const html = `
-  <div class="print-page">
-    <div class="doc-title">
-      DAFTAR HADIR SISWA KELAS ${currentData.config.kelas.toUpperCase()}<br>
-      SMPN 13 BANDAR LAMPUNG<br>
-      T.P. ${currentData.config.tp}
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;margin:6px 0 4px;">
-      <div>Mata pelajaran : ${mapel}</div>
-      <div>Semester : Ganjil</div>
-    </div>
-    <table class="print-table">
-      <colgroup>
-        <col style="width:18px"><col style="width:52px"><col style="width:auto"><col style="width:20px">
-        ${meetings.map(()=>`<col style="width:18px">`).join('')}
-        <col style="width:16px"><col style="width:16px"><col style="width:16px"><col style="width:16px">
-      </colgroup>
-      <thead>
-        <tr>
-          <th rowspan="2">No</th><th rowspan="2">NIS</th><th rowspan="2">NAMA</th><th rowspan="2">L/P</th>
-          <th colspan="${meetings.length}">Pertemuan ke / Tanggal</th>
-          <th rowspan="2">S</th><th rowspan="2">I</th><th rowspan="2">A</th><th rowspan="2">∑</th>
-        </tr>
-        <tr>${headUrutan}</tr>
-        <tr><th colspan="4"></th>${headTanggal}<th colspan="4"></th></tr>
-      </thead>
-      <tbody>${rows}</tbody>
-      <tfoot>
-        <tr style="font-weight:700;"><td colspan="4" style="text-align:right;font-size:7px">Jumlah tidak hadir</td><td colspan="${meetings.length}"></td><td></td><td></td><td></td><td></td></tr>
-      </tfoot>
-    </table>
-    <div style="font-size:7px;margin-top:3px">Keterangan: S = Sakit • I = Izin • A = Alpa (Tanpa Keterangan) • Kolom kosong = Hadir</div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:8px;">
-      <div>
-        <div>Laki-laki&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;${lk} Siswa</div>
-        <div>Perempuan&nbsp;=&nbsp;&nbsp;${pr} Siswa</div>
-        <div>Jumlah&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;${siswa.length} Siswa</div>
+    pagesHtml += `
+    <div class="print-page" style="padding:0;">
+      <div class="doc-title">
+        DAFTAR HADIR SISWA KELAS ${cfg.kelas.toUpperCase()}<br>
+        SMPN 13 BANDAR LAMPUNG<br>
+        T.P. ${cfg.tp}
       </div>
-      <div style="text-align:center;min-width:160px;">
-        <div>${tglCetak}</div>
-        <div>Guru Mata Pelajaran</div>
-        <div style="height:35px;"></div>
-        <div style="font-weight:700;text-decoration:underline;">${guru}</div>
-        <div>NIP. ${nip}</div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;margin:8px 0 6px;">
+        <div>Mata pelajaran : ${cfg.mapel}</div>
+        <div>Semester : ${cfg.semester}</div>
       </div>
-    </div>
-  </div>`;
+      <table class="print-table">
+        <colgroup>
+          <col class="col-no"><col class="col-nis"><col class="col-nama"><col class="col-lp">
+          ${block.map(()=>`<col class="col-meet">`).join('') || '<col class="col-meet">'}
+          <col class="col-tot"><col class="col-tot"><col class="col-tot"><col class="col-tot">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2">No</th><th rowspan="2">NIS</th><th rowspan="2">NAMA</th><th rowspan="2">L/P</th>
+            <th colspan="${block.length||1}">Pertemuan ke / Tanggal</th>
+            <th rowspan="2">S</th><th rowspan="2">I</th><th rowspan="2">A</th><th rowspan="2">∑</th>
+          </tr>
+          <tr>${headUrutan || emptyCols}</tr>
+          <tr><th colspan="4"></th>${headTanggal || '<th></th>'}<th colspan="4"></th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="font-weight:700;">
+            <td colspan="4" style="text-align:right;">Jumlah tidak hadir</td>
+            <td colspan="${block.length||1}"></td>
+            <td>${footS||''}</td><td>${footI||''}</td><td>${footA||''}</td><td>${(footS+footI+footA)||''}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="print-footnote">Keterangan: S = Sakit &nbsp;•&nbsp; I = Izin &nbsp;•&nbsp; A = Alpa (Tanpa Keterangan) &nbsp;•&nbsp; Kolom kosong = Hadir</div>
+      <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:11.5px;">
+        <div>
+          <div>Laki-laki&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${lk} Siswa</div>
+          <div>Perempuan&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${pr} Siswa</div>
+          <div>Jumlah&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${siswa.length} Siswa</div>
+        </div>
+        <div style="text-align:center;min-width:220px;">
+          <div>${tglCetak}</div>
+          <div>Guru Mata Pelajaran</div>
+          <div style="height:42px;"></div>
+          <div style="font-weight:700;text-decoration:underline;">${guru}</div>
+          <div>NIP. ${nip}</div>
+        </div>
+      </div>
+    </div>`;
+  });
 
-  document.getElementById('printArea').innerHTML = html;
-  setTimeout(()=>window.print(), 200);
+  document.getElementById('printArea').innerHTML = pagesHtml;
+  window.print();
 }
+
+init();
 </script>
 </body>
 </html>
