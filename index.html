@@ -110,6 +110,12 @@
       padding:0 !important;
     }
 
+    /* Halaman ke-2 dan seterusnya: judul diturunkan
+       agar posisi vertikal lebih seimbang. */
+    .print-page:not(:first-child) .print-page-inner{
+      padding-top:12mm !important;
+    }
+
     .print-spacer{display:none !important;}
 
     .doc-title{
