@@ -30,142 +30,131 @@
   ::-webkit-scrollbar{ height:10px; width:10px; }
   ::-webkit-scrollbar-thumb{ background:#c3cad4; border-radius:8px; }
 
-  /* ===== PRINT / PDF — LEGAL PORTRAIT =====
-     Dirancang agar seluruh tabel masuk ke SATU lebar kertas Legal
-     dan tidak terpotong ke kanan. Jumlah pertemuan akan menyesuaikan
-     lebar kolom secara otomatis.
-  */
+  /* ===== PRINT / PDF — LEGAL PORTRAIT ===== */
   @media print{
     @page{
-      size: 216mm 356mm;       /* Legal / F4 portrait */
-      margin: 6mm 5mm 6mm 5mm;
+      size: Legal portrait;
+      margin: 8mm 6mm 8mm 6mm;
     }
 
     html, body{
-      width: 216mm !important;
+      width: auto !important;
+      min-height: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
-      background:#fff !important;
+      background: #fff !important;
       overflow: visible !important;
     }
 
-    body *{ visibility:hidden !important; }
-    #printArea, #printArea *{ visibility:visible !important; }
+    body *{ visibility: hidden !important; }
+    #printArea, #printArea *{ visibility: visible !important; }
 
     #printArea{
-      display:block !important;
-      position:static !important;
-      width:206mm !important;
-      margin:0 auto !important;
-      padding:0 !important;
+      display: block !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 204mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .print-page{
-      width:206mm !important;
-      min-height:0 !important;
-      height:auto !important;
-      margin:0 !important;
-      padding:0 !important;
-      page-break-after:always;
-      break-after:page;
-      overflow:visible !important;
+      display: block !important;
+      width: 204mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      page-break-after: always !important;
+      break-after: page !important;
+      overflow: visible !important;
     }
-
     .print-page:last-child{
-      page-break-after:auto;
-      break-after:auto;
+      page-break-after: auto !important;
+      break-after: auto !important;
     }
 
     .print-page-inner{
-      display:block !important;
-      width:206mm !important;
-      min-height:0 !important;
-      height:auto !important;
-      margin:0 !important;
-      padding:0 !important;
+      display: block !important;
+      width: 204mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      height: auto !important;
     }
 
     .print-spacer{ display:none !important; }
 
+    .doc-title{
+      text-align: center !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      line-height: 1.15 !important;
+      margin: 0 0 2mm 0 !important;
+    }
+
+    .print-meta{
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      font-size: 8px !important;
+      line-height: 1.1 !important;
+      margin: 0 0 2mm 0 !important;
+    }
+
     .print-table{
-      width:206mm !important;
-      max-width:206mm !important;
-      min-width:206mm !important;
-      margin:0 !important;
-      table-layout:fixed !important;
-      border-collapse:collapse !important;
-      font-size:7.4px !important;
+      width: 204mm !important;
+      max-width: 204mm !important;
+      margin: 0 !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+      font-size: 7px !important;
     }
 
     .print-table th,
     .print-table td{
-      border:0.35mm solid #000 !important;
-      padding:1mm 0.6mm !important;
-      height:5.2mm !important;
-      line-height:1.05 !important;
-      text-align:center !important;
-      vertical-align:middle !important;
-      white-space:nowrap !important;
-      overflow:hidden !important;
-      word-break:normal !important;
+      box-sizing: border-box !important;
+      border: 0.25mm solid #000 !important;
+      padding: 0.8mm 0.35mm !important;
+      height: auto !important;
+      min-height: 0 !important;
+      text-align: center !important;
+      vertical-align: middle !important;
+      line-height: 1.05 !important;
+      white-space: nowrap !important;
+      word-break: normal !important;
+      width: auto !important;
+      margin: 0 !important;
     }
 
-    .print-table th{
-      background:#eef1f5 !important;
-      font-size:7px !important;
-    }
-
+    .print-table th{ font-weight: 700 !important; }
     .print-table td.nama{
-      text-align:left !important;
-      font-size:7.2px !important;
-      overflow:hidden !important;
-      text-overflow:ellipsis !important;
-      white-space:nowrap !important;
+      text-align: left !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
     }
 
-    .print-table col.col-no{ width:6mm !important; }
-    .print-table col.col-nis{ width:21mm !important; }
-    .print-table col.col-nama{ width:38mm !important; }
-    .print-table col.col-lp{ width:6mm !important; }
-    .print-table col.col-meet{ width:auto !important; }
-    .print-table col.col-tot{ width:6mm !important; }
-
-    .doc-title{
-      text-align:center !important;
-      font-weight:700 !important;
-      font-size:10.5px !important;
-      line-height:1.15 !important;
-      margin:0 0 2mm 0 !important;
-    }
-
-    .print-meta{
-      display:flex !important;
-      justify-content:space-between !important;
-      align-items:flex-end !important;
-      width:206mm !important;
-      font-size:8px !important;
-      line-height:1.15 !important;
-      margin:0 0 2mm 0 !important;
-    }
+    .print-table col.col-no{ width: 6mm !important; }
+    .print-table col.col-nis{ width: 22mm !important; }
+    .print-table col.col-nama{ width: 39mm !important; }
+    .print-table col.col-lp{ width: 6mm !important; }
+    .print-table col.col-meet{ width: auto !important; }
+    .print-table col.col-tot{ width: 6mm !important; }
 
     .print-footnote{
-      font-size:7px !important;
-      line-height:1.1 !important;
-      color:#000 !important;
-      margin-top:1.5mm !important;
+      font-size: 7px !important;
+      line-height: 1.1 !important;
+      margin-top: 1.5mm !important;
     }
 
     .print-signature{
       display:flex !important;
       justify-content:space-between !important;
       align-items:flex-start !important;
-      width:206mm !important;
       font-size:8px !important;
-      line-height:1.2 !important;
-      margin-top:5mm !important;
+      line-height:1.15 !important;
+      margin-top:4mm !important;
     }
-
-    .print-signature .summary{ min-width:55mm !important; }
     .print-signature .teacher{
       text-align:center !important;
       min-width:65mm !important;
@@ -868,7 +857,7 @@ function generatePrint(){
         SMPN 13 BANDAR LAMPUNG<br>
         T.P. ${cfg.tp}
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin:10px 0 8px;">
+      <div class="print-meta">
         <div>Mata pelajaran : ${cfg.mapel}</div>
         <div>Semester : ${cfg.semester}</div>
       </div>
@@ -898,13 +887,13 @@ function generatePrint(){
       </table>
       <div class="print-footnote">Keterangan: S = Sakit &nbsp;•&nbsp; I = Izin &nbsp;•&nbsp; A = Alpa (Tanpa Keterangan) &nbsp;•&nbsp; Kolom kosong = Hadir</div>
       <div class="print-spacer"></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;">
+      <div class="print-signature">
         <div>
           <div>Laki-laki&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${lk} Siswa</div>
           <div>Perempuan&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${pr} Siswa</div>
           <div>Jumlah&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${siswa.length} Siswa</div>
         </div>
-        <div style="text-align:center;min-width:220px;">
+        <div class="teacher">
           <div>${tglCetak}</div>
           <div>Guru Mata Pelajaran</div>
           <div style="height:48px;"></div>
