@@ -422,11 +422,48 @@
 /* ============================================================
    STATE
 ============================================================ */
-let SCRIPT_URL = localStorage.getItem('absensi_script_url') || 'https://script.google.com/macros/s/AKfycbzJJWc5pqMSAu4nMfm43x5I6pMJc-LpPGItiZzOaUE73chUVCKkkFeDk3_2a0r3ylWPrg/exec';
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJJWc5pqMSAu4nMfm43x5I6pMJc-LpPGItiZzOaUE73chUVCKkkFeDk3_2a0r3ylWPrg/exec';
+let SCRIPT_URL = DEFAULT_SCRIPT_URL;
+
+// localStorage hanya sebagai preferensi lokal. Jika isinya kosong,
+// tidak valid, atau berasal dari konfigurasi lama, aplikasi kembali
+// otomatis ke URL server utama.
+try {
+  const savedScriptUrl = localStorage.getItem('absensi_script_url');
+  SCRIPT_URL = (savedScriptUrl && /^https:\/\/script\.google\.com\/macros\/s\/[^\s]+\/exec$/.test(savedScriptUrl))
+    ? savedScriptUrl
+    : DEFAULT_SCRIPT_URL;
+} catch(e) {
+  SCRIPT_URL = DEFAULT_SCRIPT_URL;
+}
 let kelasList = [];
-let currentKelasKey = localStorage.getItem('absensi_current_kelas') || '';
+let currentKelasKey = safeGetLocal('absensi_current_kelas', '');
 let currentData = { config: null, siswa: [], pertemuan: [], absensi: [] };
 let absensiMap = {}; // "tanggal|nis" -> status
+
+function safeGetLocal(key, fallback=''){
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch(e) {
+    return fallback;
+  }
+}
+
+function safeSetLocal(key, value){
+  try {
+    localStorage.setItem(key, value);
+  } catch(e) {
+    // Browser/private mode yang membatasi storage tidak boleh
+    // membuat aplikasi berhenti.
+  }
+}
+
+function safeRemoveLocal(key){
+  try {
+    localStorage.removeItem(key);
+  } catch(e) {}
+}
 
 function uid(){ return 'k' + Date.now() + Math.floor(Math.random()*1000); }
 function resetNoKelasDefault(){
@@ -519,7 +556,7 @@ async function refreshKelasList(){
 async function selectKelas(kelasKey){
   await flushAbsensi();
   currentKelasKey = kelasKey;
-  localStorage.setItem('absensi_current_kelas', kelasKey);
+  safeSetLocal('absensi_current_kelas', kelasKey);
   document.getElementById('kelasSelect').value = kelasKey;
   await loadKelasData();
 }
@@ -586,9 +623,22 @@ function openSettings(){
 }
 async function saveSettings(){
   const val = document.getElementById('inputScriptUrl').value.trim();
-  if(!val){ return; }
-  SCRIPT_URL = val;
-  localStorage.setItem('absensi_script_url', val);
+  if(!val){
+    SCRIPT_URL = DEFAULT_SCRIPT_URL;
+    safeRemoveLocal('absensi_script_url');
+  } else {
+    try {
+      const parsed = new URL(val);
+      if(parsed.protocol !== 'https:' || parsed.hostname !== 'script.google.com'){
+        throw new Error('URL tidak valid');
+      }
+      SCRIPT_URL = val;
+      safeSetLocal('absensi_script_url', val);
+    } catch(e) {
+      alert('URL Google Apps Script tidak valid.');
+      return;
+    }
+  }
   closeModal();
   document.getElementById('noServer').classList.add('hidden');
   document.getElementById('appBody').classList.remove('hidden');
@@ -641,7 +691,7 @@ async function saveKelasModal(existingKey){
     const r = await api('saveKelas', { kelasKey: existingKey || '', kelas, mapel, semester, tp, guru, nip });
     closeModal();
     currentKelasKey = r.kelasKey;
-    localStorage.setItem('absensi_current_kelas', r.kelasKey);
+    safeSetLocal('absensi_current_kelas', r.kelasKey);
     await refreshKelasList();
     showStatus('Kelas disimpan', 'ok');
   }catch(err){ showStatus('Gagal menyimpan kelas: '+err.message, 'err'); }
