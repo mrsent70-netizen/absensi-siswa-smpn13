@@ -119,8 +119,8 @@
       padding:0 !important;
       text-align:center !important;
       font-weight:700 !important;
-      font-size:10px !important;
-      line-height:1.05 !important;
+      font-size:11px !important;
+      line-height:1.08 !important;
     }
 
     .print-meta{
@@ -130,8 +130,8 @@
       width:198mm !important;
       margin:0 0 1.5mm 0 !important;
       padding:0 !important;
-      font-size:7.5px !important;
-      line-height:1 !important;
+      font-size:9px !important;
+      line-height:1.05 !important;
     }
 
     .print-table{
@@ -143,7 +143,7 @@
       border-collapse:collapse !important;
       border-spacing:0 !important;
       table-layout:fixed !important;
-      font-size:7.2px !important;
+      font-size:9px !important;
     }
 
     /*
@@ -155,7 +155,7 @@
     .print-table td{
       box-sizing:border-box !important;
       border:0.3mm solid #000 !important;
-      padding:0.8mm 0.25mm !important;
+      padding:0.7mm 0.3mm !important;
       height:7.5mm !important;
       min-height:7.5mm !important;
       max-height:7.5mm !important;
@@ -171,7 +171,7 @@
       min-height:6mm !important;
       max-height:6mm !important;
       padding:0.5mm 0.2mm !important;
-      font-size:6.8px !important;
+      font-size:8.5px !important;
       font-weight:700 !important;
       background:#eef1f5 !important;
     }
@@ -206,8 +206,8 @@
       width:198mm !important;
       margin:1mm 0 0 0 !important;
       padding:0 !important;
-      font-size:7px !important;
-      line-height:1 !important;
+      font-size:8.5px !important;
+      line-height:1.05 !important;
     }
 
     .print-signature{
@@ -217,8 +217,8 @@
       width:198mm !important;
       margin:3mm 0 0 0 !important;
       padding:0 !important;
-      font-size:7.5px !important;
-      line-height:1.05 !important;
+      font-size:8.5px !important;
+      line-height:1.08 !important;
     }
 
     .print-signature .teacher{
@@ -392,8 +392,8 @@
             </div>
             <div>
               <label class="text-xs font-semibold text-slate-500">Jumlah kolom pertemuan per halaman</label>
-              <input id="cetakBlok" type="number" value="20" min="5" max="20" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
-              <p class="text-[11px] text-slate-400 mt-1">Kertas Legal Potrait. Maksimal 20 kolom pertemuan per halaman agar seluruh tabel tetap proporsional dan terlihat.</p>
+              <input id="cetakBlok" type="number" value="10" min="5" max="10" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
+              <p class="text-[11px] text-slate-400 mt-1">Kertas Legal Portrait. Maksimal 10 kolom pertemuan per halaman agar tulisan lebih besar dan mudah dibaca.</p>
             </div>
           </div>
           <button onclick="generatePrint()" class="bg-[var(--teal)] text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90">🖨️ Buat & Cetak PDF</button>
@@ -887,7 +887,7 @@ function generatePrint(){
   const guru = document.getElementById('cetakGuru').value || cfg.guru;
   const nip = document.getElementById('cetakNip').value || cfg.nip;
   const tglCetak = document.getElementById('cetakTanggal').value || ('Bandar Lampung,       ' + cfg.tp.split('-')[0]);
-  const blokSize = Math.min(20, Math.max(5, parseInt(document.getElementById('cetakBlok').value) || 20));
+  const blokSize = Math.min(10, Math.max(5, parseInt(document.getElementById('cetakBlok').value) || 10));
 
   const blocks = [];
   for(let i=0;i<meetings.length;i+=blokSize) blocks.push(meetings.slice(i,i+blokSize));
