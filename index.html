@@ -49,17 +49,26 @@
       overflow:visible !important;
     }
 
-    body *{ visibility:hidden !important; }
+    /*
+      PENTING:
+      Semua isi aplikasi disembunyikan dengan DISPLAY:none, bukan
+      visibility:hidden. visibility:hidden masih memakan ruang layout
+      sehingga Chrome membuat halaman kosong pertama.
+    */
+    body > *{
+      display:none !important;
+    }
+
     #printArea,
-    #printArea *{ visibility:visible !important; }
+    #printArea *{
+      visibility:visible !important;
+    }
 
     /*
-      KUNCI POSISI:
-      kertas = 216 mm.
-      Ruang jilid = 15 mm di KIRI.
-      Area tabel = 201 mm (sisa kanan).
-      Tidak menggunakan margin-left pada @page agar Chrome
-      tidak memindahkan ruang jilid ke sisi kanan.
+      Area cetak langsung menjadi satu-satunya isi halaman.
+      Kertas Legal = 216 mm.
+      Jilid = 15 mm di KIRI.
+      Area cetak = 198 mm, dengan sisa kanan 3 mm.
     */
     #printArea{
       display:block !important;
@@ -68,6 +77,7 @@
       left:15mm !important;
       box-sizing:border-box !important;
       width:198mm !important;
+      height:auto !important;
       margin:0 !important;
       padding:5mm 0 5mm 0 !important;
       background:#fff !important;
