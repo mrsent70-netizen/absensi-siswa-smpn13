@@ -30,28 +30,188 @@
   ::-webkit-scrollbar{ height:10px; width:10px; }
   ::-webkit-scrollbar-thumb{ background:#c3cad4; border-radius:8px; }
 
-  /* ===== PRINT / PDF (F4 / Legal landscape) ===== */
+  /* ===== PRINT / PDF — LEGAL PORTRAIT =====
+     Dirancang agar seluruh tabel masuk ke SATU lebar kertas Legal
+     dan tidak terpotong ke kanan. Jumlah pertemuan akan menyesuaikan
+     lebar kolom secara otomatis.
+  */
   @media print{
-    body *{ visibility:hidden; }
-    #printArea, #printArea *{ visibility:visible; }
-    #printArea{ display:block !important; position:absolute; top:0; left:0; width:100%; }
-    @page{ size:215mm 330mm; margin:15mm; }
-    .print-page{ page-break-after:always; }
-    .print-page:last-child{ page-break-after:auto; }
+    @page{
+      size: 216mm 356mm;       /* Legal / F4 portrait */
+      margin: 6mm 5mm 6mm 5mm;
+    }
+
+    html, body{
+      width: 216mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background:#fff !important;
+      overflow: visible !important;
+    }
+
+    body *{ visibility:hidden !important; }
+    #printArea, #printArea *{ visibility:visible !important; }
+
+    #printArea{
+      display:block !important;
+      position:static !important;
+      width:206mm !important;
+      margin:0 auto !important;
+      padding:0 !important;
+    }
+
+    .print-page{
+      width:206mm !important;
+      min-height:0 !important;
+      height:auto !important;
+      margin:0 !important;
+      padding:0 !important;
+      page-break-after:always;
+      break-after:page;
+      overflow:visible !important;
+    }
+
+    .print-page:last-child{
+      page-break-after:auto;
+      break-after:auto;
+    }
+
+    .print-page-inner{
+      display:block !important;
+      width:206mm !important;
+      min-height:0 !important;
+      height:auto !important;
+      margin:0 !important;
+      padding:0 !important;
+    }
+
+    .print-spacer{ display:none !important; }
+
+    .print-table{
+      width:206mm !important;
+      max-width:206mm !important;
+      min-width:206mm !important;
+      margin:0 !important;
+      table-layout:fixed !important;
+      border-collapse:collapse !important;
+      font-size:7.4px !important;
+    }
+
+    .print-table th,
+    .print-table td{
+      border:0.35mm solid #000 !important;
+      padding:1mm 0.6mm !important;
+      height:5.2mm !important;
+      line-height:1.05 !important;
+      text-align:center !important;
+      vertical-align:middle !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      word-break:normal !important;
+    }
+
+    .print-table th{
+      background:#eef1f5 !important;
+      font-size:7px !important;
+    }
+
+    .print-table td.nama{
+      text-align:left !important;
+      font-size:7.2px !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      white-space:nowrap !important;
+    }
+
+    .print-table col.col-no{ width:6mm !important; }
+    .print-table col.col-nis{ width:21mm !important; }
+    .print-table col.col-nama{ width:38mm !important; }
+    .print-table col.col-lp{ width:6mm !important; }
+    .print-table col.col-meet{ width:auto !important; }
+    .print-table col.col-tot{ width:6mm !important; }
+
+    .doc-title{
+      text-align:center !important;
+      font-weight:700 !important;
+      font-size:10.5px !important;
+      line-height:1.15 !important;
+      margin:0 0 2mm 0 !important;
+    }
+
+    .print-meta{
+      display:flex !important;
+      justify-content:space-between !important;
+      align-items:flex-end !important;
+      width:206mm !important;
+      font-size:8px !important;
+      line-height:1.15 !important;
+      margin:0 0 2mm 0 !important;
+    }
+
+    .print-footnote{
+      font-size:7px !important;
+      line-height:1.1 !important;
+      color:#000 !important;
+      margin-top:1.5mm !important;
+    }
+
+    .print-signature{
+      display:flex !important;
+      justify-content:space-between !important;
+      align-items:flex-start !important;
+      width:206mm !important;
+      font-size:8px !important;
+      line-height:1.2 !important;
+      margin-top:5mm !important;
+    }
+
+    .print-signature .summary{ min-width:55mm !important; }
+    .print-signature .teacher{
+      text-align:center !important;
+      min-width:65mm !important;
+    }
   }
+
   #printArea{ display:none; }
-  .doc-title{ text-align:center; font-weight:700; font-size:14px; line-height:1.35; }
-  .print-table{ width:auto; max-width:100%; margin:0 auto; border-collapse:collapse; font-size:10.5px; table-layout:auto; }
-  .print-table th, .print-table td{ border:1px solid #000; padding:3px 5px; text-align:center; word-break:break-word; line-height:1.25; white-space:nowrap; }
+
+  .doc-title{
+    text-align:center;
+    font-weight:700;
+    font-size:14px;
+    line-height:1.35;
+  }
+
+  .print-table{
+    width:100%;
+    max-width:100%;
+    margin:0 auto;
+    border-collapse:collapse;
+    font-size:11.5px;
+    table-layout:fixed;
+  }
+
+  .print-table th,
+  .print-table td{
+    border:1px solid #000;
+    padding:4px 5px;
+    text-align:center;
+    word-break:normal;
+    line-height:1.2;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
   .print-table th{ background:#eef1f5; font-weight:700; }
-  .print-table td.nama{ text-align:left; white-space:nowrap; font-size:10px; }
-  .print-table col.col-no{ width:22px; }
-  .print-table col.col-nis{ width:78px; }
-  .print-table col.col-nama{ width:150px; }
-  .print-table col.col-lp{ width:24px; }
-  .print-table col.col-meet{ width:28px; }
-  .print-table col.col-tot{ width:24px; }
-  .print-footnote{ font-size:9.5px; color:#333; margin-top:5px; }
+  .print-table td.nama{ text-align:left; white-space:nowrap; }
+  .print-table col.col-no{ width:6mm; }
+  .print-table col.col-nis{ width:21mm; }
+  .print-table col.col-nama{ width:38mm; }
+  .print-table col.col-lp{ width:6mm; }
+  .print-table col.col-meet{ width:auto; }
+  .print-table col.col-tot{ width:6mm; }
+  .print-footnote{ font-size:10px; color:#333; margin-top:6px; }
+  .print-page-inner{ display:block; width:100%; }
+  .print-spacer{ display:none; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -162,7 +322,7 @@
       <!-- TAB: CETAK -->
       <section id="tab-cetak" class="tab-panel hidden">
         <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-4">
-          <h2 class="font-bold text-slate-800">Cetak / Unduh PDF (Ukuran F4 / Legal, Potrait)</h2>
+          <h2 class="font-bold text-slate-800">Cetak / Unduh PDF (Ukuran Legal, Potrait)</h2>
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
               <label class="text-xs font-semibold text-slate-500">Guru Mata Pelajaran</label>
@@ -178,12 +338,12 @@
             </div>
             <div>
               <label class="text-xs font-semibold text-slate-500">Jumlah kolom pertemuan per halaman</label>
-              <input id="cetakBlok" type="number" value="10" min="5" max="20" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
-              <p class="text-[11px] text-slate-400 mt-1">Kertas F4 Potrait lebih sempit, disarankan 8–10 kolom pertemuan per halaman agar tidak terlalu kecil.</p>
+              <input id="cetakBlok" type="number" value="20" min="5" max="20" class="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm mt-1">
+              <p class="text-[11px] text-slate-400 mt-1">Kertas Legal Potrait. Maksimal 20 kolom pertemuan per halaman agar seluruh tabel tetap proporsional dan terlihat.</p>
             </div>
           </div>
           <button onclick="generatePrint()" class="bg-[var(--teal)] text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90">🖨️ Buat & Cetak PDF</button>
-          <p class="text-xs text-slate-400">Setelah halaman cetak terbuka, pada kotak dialog print pilih "Save as PDF" / "Simpan sebagai PDF" dan pastikan ukuran kertas F4 / Legal, orientasi Potrait (tegak).</p>
+          <p class="text-xs text-slate-400">Setelah halaman cetak terbuka, pada kotak dialog print pilih "Save as PDF" / "Simpan sebagai PDF" dan pastikan ukuran kertas Legal, orientasi Potrait (tegak), dan skala 100%.</p>
         </div>
       </section>
 
@@ -673,7 +833,7 @@ function generatePrint(){
   const guru = document.getElementById('cetakGuru').value || cfg.guru;
   const nip = document.getElementById('cetakNip').value || cfg.nip;
   const tglCetak = document.getElementById('cetakTanggal').value || ('Bandar Lampung,       ' + cfg.tp.split('-')[0]);
-  const blokSize = parseInt(document.getElementById('cetakBlok').value) || 20;
+  const blokSize = Math.min(20, Math.max(5, parseInt(document.getElementById('cetakBlok').value) || 20));
 
   const blocks = [];
   for(let i=0;i<meetings.length;i+=blokSize) blocks.push(meetings.slice(i,i+blokSize));
@@ -702,12 +862,13 @@ function generatePrint(){
 
     pagesHtml += `
     <div class="print-page" style="padding:0;">
+      <div class="print-page-inner">
       <div class="doc-title">
         DAFTAR HADIR SISWA KELAS ${cfg.kelas.toUpperCase()}<br>
         SMPN 13 BANDAR LAMPUNG<br>
         T.P. ${cfg.tp}
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11.5px;margin:8px 0 6px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin:10px 0 8px;">
         <div>Mata pelajaran : ${cfg.mapel}</div>
         <div>Semester : ${cfg.semester}</div>
       </div>
@@ -736,7 +897,8 @@ function generatePrint(){
         </tfoot>
       </table>
       <div class="print-footnote">Keterangan: S = Sakit &nbsp;•&nbsp; I = Izin &nbsp;•&nbsp; A = Alpa (Tanpa Keterangan) &nbsp;•&nbsp; Kolom kosong = Hadir</div>
-      <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:11.5px;">
+      <div class="print-spacer"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;">
         <div>
           <div>Laki-laki&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${lk} Siswa</div>
           <div>Perempuan&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;${pr} Siswa</div>
@@ -745,10 +907,11 @@ function generatePrint(){
         <div style="text-align:center;min-width:220px;">
           <div>${tglCetak}</div>
           <div>Guru Mata Pelajaran</div>
-          <div style="height:42px;"></div>
+          <div style="height:48px;"></div>
           <div style="font-weight:700;text-decoration:underline;">${guru}</div>
           <div>NIP. ${nip}</div>
         </div>
+      </div>
       </div>
     </div>`;
   });
