@@ -279,6 +279,19 @@
   .print-footnote{font-size:10px;color:#333;margin-top:6px;}
   .print-page-inner{display:block;width:100%;}
   .print-spacer{display:none;}
+
+  /* Absensi: mode HP (daftar besar) vs mode Tabel (layar lebar) */
+  #mobileMarkBox{ display:block; }
+  #absensiTableWrap{ display:none; }
+  @media (min-width: 860px){
+    #mobileMarkBox{ display:none; }
+    #absensiTableWrap{ display:block; }
+  }
+  .mark-btn{ flex:1; padding:10px 4px; border-radius:8px; font-size:13px; font-weight:700; border:1px solid #e2e8f0; background:#fff; color:#94a3b8; }
+  .mark-btn.active-H{ background:#10b981; border-color:#10b981; color:#fff; }
+  .mark-btn.active-S{ background:#f59e0b; border-color:#f59e0b; color:#fff; }
+  .mark-btn.active-I{ background:#3b82f6; border-color:#3b82f6; color:#fff; }
+  .mark-btn.active-A{ background:#ef4444; border-color:#ef4444; color:#fff; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -377,10 +390,21 @@
             <label class="text-sm font-semibold text-slate-600">Tambah Pertemuan:</label>
             <input type="date" id="newMeetingDate" class="border border-slate-300 rounded-md px-2 py-1.5 text-sm">
             <button onclick="addMeeting()" class="text-sm px-3 py-1.5 rounded-md bg-[var(--navy)] text-white font-semibold">+ Tambah</button>
-            <span class="text-xs text-slate-400">Klik sel pada tabel untuk mengubah status: kosong (Hadir) → S → I → A</span>
           </div>
         </div>
-        <div class="bg-white rounded-xl border border-slate-200 p-2 overflow-x-auto">
+
+        <!-- Mode HP: satu pertemuan, tombol besar per siswa -->
+        <div id="mobileMarkBox" class="bg-white rounded-xl border border-slate-200 p-4 mb-4">
+          <div class="flex items-center gap-2 mb-3 flex-wrap">
+            <label class="text-sm font-semibold text-slate-600">Tandai Pertemuan:</label>
+            <select id="mobileMeetingSelect" class="border border-slate-300 rounded-md px-2 py-1.5 text-sm flex-1 min-w-[160px]"></select>
+          </div>
+          <div id="mobileStudentList" class="space-y-2"></div>
+        </div>
+
+        <!-- Mode Tabel: cocok untuk laptop/layar lebar -->
+        <div id="absensiTableWrap" class="bg-white rounded-xl border border-slate-200 p-2 overflow-x-auto">
+          <div class="text-xs text-slate-400 px-2 pt-1 pb-2">Klik sel pada tabel untuk mengubah status: kosong (Hadir) → S → I → A</div>
           <table class="grid text-xs min-w-max" id="absensiTable"></table>
         </div>
         <div class="bg-white rounded-xl border border-slate-200 p-4 mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm" id="rekapBox"></div>
@@ -476,6 +500,7 @@ async function init(){
   document.getElementById('kelasSelect').addEventListener('change', e=>selectKelas(e.target.value));
   document.getElementById('btnKelasBaru').addEventListener('click', ()=>openKelasModal());
   document.getElementById('btnPengaturan').addEventListener('click', openSettings);
+  document.getElementById('mobileMeetingSelect').addEventListener('change', renderMobileMarkList);
 
   if(!SCRIPT_URL){
     document.getElementById('noServer').classList.remove('hidden');
@@ -564,6 +589,7 @@ async function loadKelasData(){
 
   renderSiswaTable();
   renderAbsensiTable();
+  renderMobileMark();
   renderRekap();
   showStatus('Data dimuat', 'ok');
 }
@@ -814,6 +840,7 @@ async function addMeeting(){
     if(r.added === false){ showStatus('Pertemuan tanggal itu sudah ada', 'err'); return; }
     currentData.pertemuan.push({ kelasKey: currentKelasKey, urutan: r.urutan, tanggal: label, tanggalIso: val });
     renderAbsensiTable();
+    renderMobileMark();
     showStatus('Pertemuan ditambahkan', 'ok');
   }catch(err){ showStatus('Gagal menambah pertemuan: '+err.message, 'err'); }
 }
@@ -824,6 +851,7 @@ async function removeMeeting(tanggal){
     currentData.pertemuan = currentData.pertemuan.filter(m=>m.tanggal !== tanggal);
     Object.keys(absensiMap).forEach(k=>{ if(k.startsWith(tanggal+'|')) delete absensiMap[k]; });
     renderAbsensiTable();
+    renderMobileMark();
     renderRekap();
     showStatus('Pertemuan dihapus', 'ok');
   }catch(err){ showStatus('Gagal menghapus pertemuan: '+err.message, 'err'); }
@@ -839,6 +867,58 @@ function cycleCell(tanggal, nis){
   const next = CYCLE[(CYCLE.indexOf(cur)+1) % CYCLE.length];
   absensiMap[key] = next;
   pendingAbsensi[key] = { tanggal, nis, status: next };
+  renderAbsensiTable();
+  renderMobileMarkList();
+  renderRekap();
+  scheduleFlush();
+}
+
+/* ============================================================
+   MODE HP: tandai satu pertemuan sekaligus, tombol besar per siswa
+============================================================ */
+function renderMobileMark(){
+  const sel = document.getElementById('mobileMeetingSelect');
+  const meetings = currentData.pertemuan || [];
+  const prevVal = sel.value;
+  sel.innerHTML = meetings.map(m=>`<option value="${m.tanggal}">Pertemuan ${m.urutan} — ${m.tanggal}</option>`).join('');
+  if(meetings.length === 0){
+    document.getElementById('mobileStudentList').innerHTML =
+      '<p class="text-sm text-slate-400 text-center py-6">Belum ada pertemuan. Tambahkan pertemuan dulu di atas.</p>';
+    return;
+  }
+  const stillExists = meetings.some(m=>m.tanggal===prevVal);
+  sel.value = stillExists ? prevVal : meetings[meetings.length-1].tanggal;
+  renderMobileMarkList();
+}
+
+function renderMobileMarkList(){
+  const sel = document.getElementById('mobileMeetingSelect');
+  const tanggal = sel.value;
+  if(!tanggal) return;
+  const siswa = currentData.siswa || [];
+  const list = document.getElementById('mobileStudentList');
+  if(siswa.length === 0){
+    list.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">Belum ada data siswa. Isi dulu di tab Data Siswa.</p>';
+    return;
+  }
+  list.innerHTML = siswa.map((s,i)=>{
+    const key = tanggal+'|'+s.nis;
+    const st = absensiMap[key] || '';
+    const mk = (val,label)=>`<button onclick="setMobileStatus('${tanggal}','${s.nis}','${val}')" class="mark-btn ${st===val ? 'active-'+(val||'H') : ''}">${label}</button>`;
+    return `<div class="border border-slate-200 rounded-lg p-2.5">
+      <div class="text-sm font-semibold text-slate-700 mb-2">${i+1}. ${s.nama} <span class="text-slate-400 font-normal">(${s.lp})</span></div>
+      <div class="flex gap-1.5">
+        ${mk('', 'Hadir')}${mk('S','S')}${mk('I','I')}${mk('A','A')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setMobileStatus(tanggal, nis, status){
+  const key = tanggal+'|'+nis;
+  absensiMap[key] = status;
+  pendingAbsensi[key] = { tanggal, nis, status };
+  renderMobileMarkList();
   renderAbsensiTable();
   renderRekap();
   scheduleFlush();
