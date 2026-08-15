@@ -34,7 +34,7 @@
   @media print{
     body *{ visibility:hidden; }
     #printArea, #printArea *{ visibility:visible; }
-    #printArea{ display:block !important; position:absolute; top:0; left:0; width:100%; }
+    #printArea{ display:block !important; position:absolute; top:0; left:15mm; width:calc(100% - 15mm); }
     @page{ size:215mm 330mm; margin:15mm; }
     .print-page{ page-break-after:always; }
     .print-page:last-child{ page-break-after:auto; }
